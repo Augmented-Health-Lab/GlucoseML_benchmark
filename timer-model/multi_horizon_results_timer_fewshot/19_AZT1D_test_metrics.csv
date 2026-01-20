@@ -1,0 +1,26 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,model_context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 1,12,30,144,96,6,5,5min,1,final,17.06214962379717,12.55531351792185,1900,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 10,12,30,144,96,6,5,5min,1,final,22.699875315799662,14.495552108684224,2087,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 11,12,30,144,96,6,5,5min,1,final,24.367292239636207,18.34632204473724,2113,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 12,12,30,144,96,6,5,5min,1,final,20.736734387203004,14.541655077618506,2386,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 13,12,30,144,96,6,5,5min,1,final,16.46893282869835,11.579242258105598,2264,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 14,12,30,144,96,6,5,5min,1,final,25.65586662968088,19.25986545245976,2264,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 15,12,30,144,96,6,5,5min,1,final,25.468042075349118,17.767332523988454,2458,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 16,12,30,144,96,6,5,5min,1,final,16.17274086594384,11.351678800361102,2150,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 17,12,30,144,96,6,5,5min,1,final,30.66408423684644,23.444741618417257,2373,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 18,12,30,144,96,6,5,5min,1,final,21.52929310360021,15.84370732307434,1952,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 19,12,30,144,96,6,5,5min,1,final,18.572521688602002,13.676769194589403,2461,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 2,12,30,144,96,6,5,5min,1,final,27.032287398562655,19.58044369883557,1928,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 20,12,30,144,96,6,5,5min,1,final,21.029179643774647,14.975875675441163,2514,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 21,12,30,144,96,6,5,5min,1,final,27.21068188530308,20.015483451441714,2375,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 22,12,30,144,96,6,5,5min,1,final,24.35242036553168,18.041368783708123,1957,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 23,12,30,144,96,6,5,5min,1,final,27.061684329192136,19.544949398786287,2277,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 24,12,30,144,96,6,5,5min,1,final,24.00498376112115,18.007475842755664,1868,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 25,12,30,144,96,6,5,5min,1,final,24.986397718485577,18.40589447249114,2011,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 3,12,30,144,96,6,5,5min,1,final,18.513056324692307,12.712407455579688,1691,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 4,12,30,144,96,6,5,5min,1,final,24.703705357414172,17.646190199003044,2404,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 5,12,30,144,96,6,5,5min,1,final,20.41562995437096,14.106576373896647,2328,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 6,12,30,144,96,6,5,5min,1,final,20.18724915457728,14.350413022649823,2249,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 7,12,30,144,96,6,5,5min,1,final,21.998554547046915,15.906932590186244,2378,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 8,12,30,144,96,6,5,5min,1,final,20.497846818093784,14.452220429488218,1464,10,16,240,,,1e-05,0.01,all
+19_AZT1D,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,Subject 9,12,30,144,96,6,5,5min,1,final,22.44435715505758,17.333141944169228,1854,10,16,240,,,1e-05,0.01,all

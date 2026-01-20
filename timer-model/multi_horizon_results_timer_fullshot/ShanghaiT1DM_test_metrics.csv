@@ -1,0 +1,13 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,model_context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1001,12,30,144,96,6,5,5min,1,final,11.222051365277807,8.051711105718844,246,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1002,12,30,144,96,6,5,5min,1,final,9.920202962387942,7.39211989407334,1045,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1003,12,30,144,96,6,5,5min,1,final,10.652516385133978,7.6900244196620555,654,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1004,12,30,144,96,6,5,5min,1,final,11.040340251026578,8.144356515936721,401,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1005,12,30,144,96,6,5,5min,1,final,17.366939173594293,12.5100121616332,605,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1006,12,30,144,96,6,5,5min,1,final,14.7327949705977,10.689789900660285,2076,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1007,12,30,144,96,6,5,5min,1,final,9.992797227240798,6.582451836438493,653,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1008,12,30,144,96,6,5,5min,1,final,9.759437383810894,7.2880057184642535,311,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1009,12,30,144,96,6,5,5min,1,final,6.779855636628512,5.028628745445839,260,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1010,12,30,144,96,6,5,5min,1,final,10.13872850846109,7.625840561899973,402,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1011,12,30,144,96,6,5,5min,1,final,13.748409858229167,10.675374995766347,173,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,1012,12,30,144,96,6,5,5min,1,final,17.269166558600713,12.664844775418622,654,10,16,10,,,1e-05,0.01,all

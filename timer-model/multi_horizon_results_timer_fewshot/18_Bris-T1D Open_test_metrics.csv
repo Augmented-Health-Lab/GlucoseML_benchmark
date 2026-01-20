@@ -1,0 +1,21 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,model_context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P01,12,30,144,96,6,5,5min,1,final,19.11372606058947,11.97566877400787,11495,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P02,12,30,144,96,6,5,5min,1,final,14.219264657250609,4.997840294668224,11912,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P03,12,30,144,96,6,5,5min,1,final,26.198865000364222,19.186593133875363,4747,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P04,12,30,144,96,6,5,5min,1,final,29.26022483124164,21.33797399629721,12459,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P05,12,30,144,96,6,5,5min,1,final,17.229688696713314,10.940716610583895,12674,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P06,12,30,144,96,6,5,5min,1,final,19.07954323465634,12.424903629449233,11372,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P07,12,30,144,96,6,5,5min,1,final,34.62419183413401,24.721025463535693,11839,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P10,12,30,144,96,6,5,5min,1,final,16.081899852941184,8.01250337261591,11637,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P11,12,30,144,96,6,5,5min,1,final,22.505226036374175,14.788116436036375,12621,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P12,12,30,144,96,6,5,5min,1,final,17.91636641921497,11.18877334841691,12666,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P13,12,30,144,96,6,5,5min,1,final,12.803297897514186,8.308107581306016,5298,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P15,12,30,144,96,6,5,5min,1,final,14.093365608317036,4.7959501132549445,12390,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P16,12,30,144,96,6,5,5min,1,final,22.523389579345572,16.77144170522478,11270,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P17,12,30,144,96,6,5,5min,1,final,18.839625975259292,10.875067822926523,11073,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P18,12,30,144,96,6,5,5min,1,final,20.996952532225666,10.063772160776988,12681,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P19,12,30,144,96,6,5,5min,1,final,18.678227382053013,12.519520788890881,11584,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P21,12,30,144,96,6,5,5min,1,final,19.579372675794854,12.890611865600047,9948,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P22,12,30,144,96,6,5,5min,1,final,13.916578229625328,5.669429215488601,11832,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P23,12,30,144,96,6,5,5min,1,final,29.10366992073308,20.53657948432402,5469,10,16,240,,,1e-05,0.01,all
+18_Bris-T1D Open,test,few-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,P24,12,30,144,96,6,5,5min,1,final,27.52542650282413,19.79050485914201,11976,10,16,240,,,1e-05,0.01,all

@@ -1,0 +1,8 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,model_context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
+2_D1NAMO,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,001,12,30,144,96,6,5,5min,1,final,20.183598303832298,15.274622276647767,134,10,16,10,,,1e-05,0.01,all
+2_D1NAMO,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,002,12,30,144,96,6,5,5min,1,final,34.7531175041575,26.739503587995255,63,10,16,10,,,1e-05,0.01,all
+2_D1NAMO,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,004,12,30,144,96,6,5,5min,1,final,42.61066891345348,32.16964925130208,45,10,16,10,,,1e-05,0.01,all
+2_D1NAMO,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,005,12,30,144,96,6,5,5min,1,final,15.043375993533644,13.098322319261955,33,10,16,10,,,1e-05,0.01,all
+2_D1NAMO,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,006,12,30,144,96,6,5,5min,1,final,7.799917093305609,5.9652018324237,107,10,16,10,,,1e-05,0.01,all
+2_D1NAMO,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,007,12,30,144,96,6,5,5min,1,final,8.343789881378758,6.69275104756258,49,10,16,10,,,1e-05,0.01,all
+2_D1NAMO,test,full-shot,/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model,008,12,30,144,96,6,5,5min,1,final,12.313522826987759,9.517750883102417,80,10,16,10,,,1e-05,0.01,all
