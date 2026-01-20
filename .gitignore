@@ -1,3 +1,6 @@
 chronos-forecasting
 test_dataset
 training_dataset
+# Model repos (keep as plain folders, not nested git repos)
+timesfm
+uni2ts
