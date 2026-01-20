@@ -1,0 +1,29 @@
+2026-01-18 18:02:52,461 - INFO - Logging to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/predict_glucose_multiwindow_timesfm_zeroshot_20260118_180252.log
+2026-01-18 18:02:52,462 - INFO - Loading TimesFM model 'google/timesfm-2.5-200m-pytorch'
+2026-01-18 18:02:53,244 - INFO - Downloading checkpoint from Hugging Face repo google/timesfm-2.5-200m-pytorch
+2026-01-18 18:02:53,501 - INFO - Loading checkpoint from: /home/leon/.cache/huggingface/hub/models--google--timesfm-2.5-200m-pytorch/snapshots/1d952420fba87f3c6dee4f240de0f1a0fbc790e3/model.safetensors
+2026-01-18 18:02:54,662 - INFO - Adjusting compile max_horizon from 18 -> 128 to match output_patch_len=128
+2026-01-18 18:02:54,780 - INFO - 14_HUPA-UCM (test split): 25 participants
+2026-01-18 22:15:14,236 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/14_HUPA-UCM_test_metrics.csv (600 rows)
+2026-01-18 22:15:14,321 - INFO - 17_T1DM-UOM (test split): 17 participants
+2026-01-19 09:09:14,469 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/17_T1DM-UOM_test_metrics.csv (408 rows)
+2026-01-19 09:09:14,529 - INFO - 18_Bris-T1D Open (test split): 20 participants
+2026-01-19 23:31:48,486 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/18_Bris-T1D Open_test_metrics.csv (480 rows)
+2026-01-19 23:31:48,559 - INFO - 19_AZT1D (test split): 25 participants
+2026-01-20 05:03:27,199 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/19_AZT1D_test_metrics.csv (600 rows)
+2026-01-20 05:03:27,258 - INFO - 1_Hall2018 (test split): 30 participants
+2026-01-20 05:03:43,499 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/1_Hall2018_test_metrics.csv (115 rows)
+2026-01-20 05:03:43,519 - INFO - 2_D1NAMO (test split): 9 participants
+2026-01-20 05:06:21,444 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/2_D1NAMO_test_metrics.csv (136 rows)
+2026-01-20 05:06:21,839 - INFO - 3_Colas2019 (test split): 208 participants
+2026-01-20 05:11:54,149 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/3_Colas2019_test_metrics.csv (1248 rows)
+2026-01-20 05:11:54,183 - INFO - BIG_IDEA_LAB (test split): 16 participants
+2026-01-20 05:29:26,802 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/BIG_IDEA_LAB_test_metrics.csv (379 rows)
+2026-01-20 05:29:26,884 - INFO - CGMacros (test split): 45 participants
+2026-01-20 06:36:54,533 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/CGMacros_test_metrics.csv (1080 rows)
+2026-01-20 06:36:54,559 - INFO - ShanghaiT1DM (test split): 12 participants
+2026-01-20 07:03:25,158 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/ShanghaiT1DM_test_metrics.csv (288 rows)
+2026-01-20 07:03:25,348 - INFO - ShanghaiT2DM (test split): 100 participants
+2026-01-20 10:11:41,912 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/ShanghaiT2DM_test_metrics.csv (2343 rows)
+2026-01-20 10:11:41,950 - INFO - UCHTT1DM (test split): 20 participants
+2026-01-20 10:21:14,158 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_zeroshot/UCHTT1DM_test_metrics.csv (397 rows)

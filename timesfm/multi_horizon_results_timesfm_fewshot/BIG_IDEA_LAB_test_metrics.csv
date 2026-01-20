@@ -1,0 +1,17 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_001,12,30,144,6,5,5min,1,final,12.114751522523038,8.561963636796554,364,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_002,12,30,144,6,5,5min,1,final,16.69706254504405,12.672253473455255,275,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_003,12,30,144,6,5,5min,1,final,13.923724190886372,9.18396913088285,312,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_004,12,30,144,6,5,5min,1,final,11.050438751322412,8.081064458478961,285,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_005,12,30,144,6,5,5min,1,final,11.461262552148911,7.703506911096494,363,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_006,12,30,144,6,5,5min,1,final,17.712234316251916,10.641785483462227,421,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_007,12,30,144,6,5,5min,1,final,13.624106723273906,9.702290909282176,293,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_008,12,30,144,6,5,5min,1,final,15.061688773309378,10.064626553637833,354,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_009,12,30,144,6,5,5min,1,final,16.404463141380994,9.831771436209877,313,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_010,12,30,144,6,5,5min,1,final,21.409191028939713,13.530696901781806,232,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_011,12,30,144,6,5,5min,1,final,16.58239993851691,10.964517453601738,423,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_012,12,30,144,6,5,5min,1,final,17.659028706875944,10.90493323333072,137,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_013,12,30,144,6,5,5min,1,final,15.51830391185896,10.402985607564208,247,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_014,12,30,144,6,5,5min,1,final,16.8400997146273,12.175925162324937,299,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_015,12,30,144,6,5,5min,1,final,10.816117483044705,8.417186241645318,154,10,16,240,,,1e-05,0.01,all
+BIG_IDEA_LAB,test,few-shot,google/timesfm-2.5-200m-pytorch,Dexcom_016,12,30,144,6,5,5min,1,final,16.719995845447887,11.45747150074352,308,10,16,240,,,1e-05,0.01,all

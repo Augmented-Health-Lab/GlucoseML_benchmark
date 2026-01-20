@@ -1,0 +1,21 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,finetune_pattern,train_loss_mode
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P01,12,30,144,6,5,5min,1,final,18.639715303614334,10.715577083818287,11495,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P02,12,30,144,6,5,5min,1,final,13.624613604169012,4.77539027145519,11912,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P03,12,30,144,6,5,5min,1,final,25.393355141434245,18.40206204179917,4747,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P04,12,30,144,6,5,5min,1,final,28.46870045845657,20.751978868312577,12459,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P05,12,30,144,6,5,5min,1,final,16.565318947145283,9.475868230214418,12674,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P06,12,30,144,6,5,5min,1,final,18.29561387490389,11.27953238324552,11372,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P07,12,30,144,6,5,5min,1,final,33.825558484741165,23.89930994952286,11839,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P10,12,30,144,6,5,5min,1,final,15.731997039611885,7.740950924757882,11637,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P11,12,30,144,6,5,5min,1,final,21.203030485283254,13.840960675889326,12621,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P12,12,30,144,6,5,5min,1,final,17.123286856197883,10.558450472970417,12666,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P13,12,30,144,6,5,5min,1,final,12.1134575818754,6.9349453358346,5298,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P15,12,30,144,6,5,5min,1,final,13.722485318711929,4.675562729731599,12390,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P16,12,30,144,6,5,5min,1,final,22.20471880041918,16.37717365275047,11270,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P17,12,30,144,6,5,5min,1,final,18.352748104570637,10.464237223125393,11073,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P18,12,30,144,6,5,5min,1,final,20.189543521893633,9.713313388275466,12681,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P19,12,30,144,6,5,5min,1,final,18.882019831932368,12.457730363416408,11584,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P21,12,30,144,6,5,5min,1,final,18.455548347181313,11.09404684886618,9948,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P22,12,30,144,6,5,5min,1,final,14.086628238774258,5.597006457008326,11832,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P23,12,30,144,6,5,5min,1,final,29.895761126024883,21.021434198722343,5469,10,16,240,,,1e-05,0.01,full,all
+18_Bris-T1D Open,test,few-shot,Salesforce/moirai-2.0-R-small,P24,12,30,144,6,5,5min,1,final,26.628389370071474,19.27560582189617,11976,10,16,240,,,1e-05,0.01,full,all

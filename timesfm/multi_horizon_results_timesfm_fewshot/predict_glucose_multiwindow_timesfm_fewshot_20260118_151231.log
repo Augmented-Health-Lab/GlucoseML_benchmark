@@ -1,0 +1,37 @@
+2026-01-18 15:12:31,393 - INFO - Logging to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timesfm/multi_horizon_results_timesfm_fewshot/predict_glucose_multiwindow_timesfm_fewshot_20260118_151231.log
+2026-01-18 15:12:31,393 - INFO - Device: cuda
+2026-01-18 15:12:32,567 - INFO - Training pool: training_dataset/mixed (527 participants)
+2026-01-18 15:12:33,647 - WARNING - /mnt/c/Users/leon/Code/GlucoseML_benchmark/training_dataset/mixed/CGMacros-044.csv: skipped while merging (No columns to parse from file)
+2026-01-18 15:12:33,649 - WARNING - train/CGMacros-044: skipped (No valid data points in ['/mnt/c/Users/leon/Code/GlucoseML_benchmark/training_dataset/mixed/CGMacros-044.csv'])
+2026-01-18 15:12:36,389 - INFO - 14_HUPA-UCM: test_participants=25
+2026-01-18 15:12:36,431 - INFO - 17_T1DM-UOM: test_participants=17
+2026-01-18 15:12:36,475 - INFO - 18_Bris-T1D Open: test_participants=20
+2026-01-18 15:12:36,532 - INFO - 19_AZT1D: test_participants=25
+2026-01-18 15:12:36,596 - INFO - 1_Hall2018: test_participants=30
+2026-01-18 15:12:36,616 - INFO - 2_D1NAMO: test_participants=9
+2026-01-18 15:12:37,045 - INFO - 3_Colas2019: test_participants=208
+2026-01-18 15:12:37,087 - INFO - BIG_IDEA_LAB: test_participants=16
+2026-01-18 15:12:37,175 - INFO - CGMacros: test_participants=45
+2026-01-18 15:12:37,205 - INFO - ShanghaiT1DM: test_participants=12
+2026-01-18 15:12:37,389 - INFO - ShanghaiT2DM: test_participants=100
+2026-01-18 15:12:37,434 - INFO - UCHTT1DM: test_participants=20
+2026-01-18 15:12:37,434 - INFO - Finetune mixed: ctx=12h hor=30m
+2026-01-18 15:12:38,002 - INFO - Downloading checkpoint from Hugging Face repo google/timesfm-2.5-200m-pytorch
+2026-01-18 15:12:38,231 - INFO - Loading checkpoint from: /home/leon/.cache/huggingface/hub/models--google--timesfm-2.5-200m-pytorch/snapshots/1d952420fba87f3c6dee4f240de0f1a0fbc790e3/model.safetensors
+2026-01-18 15:12:47,392 - INFO - finetune step=50 epoch=1/10 loss=170.350861 windows=9025
+2026-01-18 15:12:55,430 - INFO - finetune step=100 epoch=1/10 loss=77.662552 windows=9025
+2026-01-18 15:13:04,121 - INFO - finetune step=150 epoch=1/10 loss=86.200279 windows=9025
+2026-01-18 15:13:12,400 - INFO - finetune step=200 epoch=1/10 loss=281.555359 windows=9025
+2026-01-18 15:13:20,697 - INFO - finetune step=250 epoch=1/10 loss=117.294128 windows=9025
+2026-01-18 15:13:28,918 - INFO - finetune step=300 epoch=1/10 loss=78.474640 windows=9025
+2026-01-18 15:13:37,571 - INFO - finetune step=350 epoch=1/10 loss=83.118454 windows=9025
+2026-01-18 15:13:45,671 - INFO - finetune step=400 epoch=1/10 loss=84.392303 windows=9025
+2026-01-18 15:13:53,929 - INFO - finetune step=450 epoch=1/10 loss=104.530746 windows=9025
+2026-01-18 15:14:02,061 - INFO - finetune step=500 epoch=1/10 loss=87.388329 windows=9025
+2026-01-18 15:14:11,066 - INFO - finetune step=550 epoch=1/10 loss=197.959641 windows=9025
+2026-01-18 15:14:19,458 - INFO - finetune step=600 epoch=2/10 loss=188.318573 windows=9025
+2026-01-18 15:14:27,870 - INFO - finetune step=650 epoch=2/10 loss=158.513428 windows=9025
+2026-01-18 15:14:36,258 - INFO - finetune step=700 epoch=2/10 loss=62.465393 windows=9025
+2026-01-18 15:14:45,979 - INFO - finetune step=750 epoch=2/10 loss=162.063354 windows=9025
+2026-01-18 15:14:55,060 - INFO - finetune step=800 epoch=2/10 loss=142.114166 windows=9025
+2026-01-18 15:15:03,981 - INFO - finetune step=850 epoch=2/10 loss=183.894623 windows=9025

@@ -1,0 +1,26 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,finetune_pattern,train_loss_mode
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 1,12,30,144,6,5,5min,1,final,17.74210071509258,12.962426593178197,1900,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 10,12,30,144,6,5,5min,1,final,22.442260962503582,14.079256497334223,2087,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 11,12,30,144,6,5,5min,1,final,25.186170807417025,19.048766262995027,2113,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 12,12,30,144,6,5,5min,1,final,20.33945961287,14.456419710541411,2386,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 13,12,30,144,6,5,5min,1,final,15.992214559523022,11.291179117802596,2264,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 14,12,30,144,6,5,5min,1,final,26.0366251342038,19.400781356825004,2264,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 15,12,30,144,6,5,5min,1,final,25.48200887673605,18.019986522789406,2458,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 16,12,30,144,6,5,5min,1,final,15.929634501127108,11.025640691712844,2150,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 17,12,30,144,6,5,5min,1,final,31.333795337486222,24.152822447084347,2373,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 18,12,30,144,6,5,5min,1,final,21.61905630769575,15.979874775057933,1952,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 19,12,30,144,6,5,5min,1,final,19.094159315078908,13.836802199331546,2461,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 2,12,30,144,6,5,5min,1,final,28.543178335801592,19.923569833589294,1928,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 20,12,30,144,6,5,5min,1,final,20.431094546720722,14.406260042031226,2514,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 21,12,30,144,6,5,5min,1,final,27.00238252693785,19.81576116622122,2375,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 22,12,30,144,6,5,5min,1,final,24.109520647444377,17.69526160098365,1957,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 23,12,30,144,6,5,5min,1,final,27.30674086015408,19.384214311615647,2277,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 24,12,30,144,6,5,5min,1,final,25.567677199208774,18.645953554157526,1868,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 25,12,30,144,6,5,5min,1,final,23.608789930093124,17.18669486365942,2011,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 3,12,30,144,6,5,5min,1,final,18.980733338095895,13.12062853514831,1691,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 4,12,30,144,6,5,5min,1,final,25.49016799035202,18.389693061841307,2404,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 5,12,30,144,6,5,5min,1,final,19.019792948310798,13.50221196236889,2328,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 6,12,30,144,6,5,5min,1,final,19.859153844581808,13.922975030460586,2249,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 7,12,30,144,6,5,5min,1,final,21.558329281878272,15.47201502633957,2378,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 8,12,30,144,6,5,5min,1,final,18.897566488220537,13.306078892587964,1464,10,16,10,,,1e-05,0.01,full,all
+19_AZT1D,test,full-shot,Salesforce/moirai-2.0-R-small,Subject 9,12,30,144,6,5,5min,1,final,22.5387583397831,17.047938889027158,1854,10,16,10,,,1e-05,0.01,full,all

@@ -1,0 +1,21 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P01,12,30,144,6,5,5min,1,final,17.546171507983207,10.40955554286829,11495,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P02,12,30,144,6,5,5min,1,final,13.25109672159664,4.694133593941632,11912,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P03,12,30,144,6,5,5min,1,final,25.266266588363834,18.54939912177649,4747,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P04,12,30,144,6,5,5min,1,final,27.938834008653416,20.524519973854087,12459,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P05,12,30,144,6,5,5min,1,final,15.608366957013027,9.366064231177882,12674,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P06,12,30,144,6,5,5min,1,final,17.587287595448355,11.081540344216812,11372,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P07,12,30,144,6,5,5min,1,final,31.883165630727937,22.85818474131044,11839,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P10,12,30,144,6,5,5min,1,final,15.139847394868795,7.428077341754832,11637,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P11,12,30,144,6,5,5min,1,final,20.637473515479094,13.536786700152678,12621,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P12,12,30,144,6,5,5min,1,final,16.627937868671058,10.344686924705343,12666,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P13,12,30,144,6,5,5min,1,final,11.656351977682577,7.080873271932059,5298,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P15,12,30,144,6,5,5min,1,final,12.963852992244618,4.41331414783838,12390,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P16,12,30,144,6,5,5min,1,final,21.291941370759474,15.832005916619153,11270,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P17,12,30,144,6,5,5min,1,final,17.785169344351512,10.250531947872217,11073,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P18,12,30,144,6,5,5min,1,final,19.129430499087427,9.219696763881457,12681,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P19,12,30,144,6,5,5min,1,final,17.878860551497574,11.87237838256425,11584,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P21,12,30,144,6,5,5min,1,final,17.420383935591556,10.848195108966651,9948,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P22,12,30,144,6,5,5min,1,final,13.682983422133159,5.471601276320328,11832,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P23,12,30,144,6,5,5min,1,final,28.736946029685452,20.4970658672512,5469,10,16,10,,,1e-05,0.01,all
+18_Bris-T1D Open,test,full-shot,google/timesfm-2.5-200m-pytorch,P24,12,30,144,6,5,5min,1,final,25.56333188411693,18.526669369750447,11976,10,16,10,,,1e-05,0.01,all

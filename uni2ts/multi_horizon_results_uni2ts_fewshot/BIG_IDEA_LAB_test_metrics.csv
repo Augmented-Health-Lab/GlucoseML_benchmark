@@ -1,0 +1,17 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,finetune_pattern,train_loss_mode
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_001,12,30,144,6,5,5min,1,final,12.803456468241567,9.30317472101568,364,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_002,12,30,144,6,5,5min,1,final,17.656533150818706,13.33322110262784,275,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_003,12,30,144,6,5,5min,1,final,15.720961859155496,10.310281704633663,312,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_004,12,30,144,6,5,5min,1,final,11.68810214478434,8.06477090935958,285,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_005,12,30,144,6,5,5min,1,final,11.245430182806576,7.934568273791268,363,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_006,12,30,144,6,5,5min,1,final,17.715993688264593,10.254117970228762,421,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_007,12,30,144,6,5,5min,1,final,13.576149095500881,9.542594623240188,293,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_008,12,30,144,6,5,5min,1,final,15.087143561631935,9.964855388059455,354,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_009,12,30,144,6,5,5min,1,final,15.355201950283597,9.243148267459565,313,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_010,12,30,144,6,5,5min,1,final,22.3198147741618,14.118605087543356,232,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_011,12,30,144,6,5,5min,1,final,17.60297430543866,11.756439587748643,423,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_012,12,30,144,6,5,5min,1,final,19.131700024049103,12.016812623852362,137,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_013,12,30,144,6,5,5min,1,final,16.40127576639486,10.835982936596581,247,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_014,12,30,144,6,5,5min,1,final,16.91579590055733,11.943160245251097,299,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_015,12,30,144,6,5,5min,1,final,11.603675433265883,8.75683628429066,154,10,16,240,,,1e-05,0.01,full,all
+BIG_IDEA_LAB,test,few-shot,Salesforce/moirai-2.0-R-small,Dexcom_016,12,30,144,6,5,5min,1,final,16.22738963064812,11.099773803314605,308,10,16,240,,,1e-05,0.01,full,all

@@ -1,0 +1,13 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1001,12,30,144,6,5,5min,1,final,11.288729318009288,8.220881082178131,246,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1002,12,30,144,6,5,5min,1,final,10.140929224046424,7.570360634543679,1045,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1003,12,30,144,6,5,5min,1,final,10.734611964618184,8.016351519010119,654,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1004,12,30,144,6,5,5min,1,final,11.233475873984732,8.74736376831359,401,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1005,12,30,144,6,5,5min,1,final,16.930655545822635,13.001653876186403,605,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1006,12,30,144,6,5,5min,1,final,14.758598081125363,10.74679735033039,2076,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1007,12,30,144,6,5,5min,1,final,10.81430612365672,7.250428589708407,653,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1008,12,30,144,6,5,5min,1,final,10.443187111333126,8.188195207111322,311,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1009,12,30,144,6,5,5min,1,final,8.167829986710437,6.06513533959022,260,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1010,12,30,144,6,5,5min,1,final,9.901690948698846,7.486421433254261,402,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1011,12,30,144,6,5,5min,1,final,14.539159393890191,11.14692906285986,173,10,16,10,,,1e-05,0.01,all
+ShanghaiT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,1012,12,30,144,6,5,5min,1,final,15.561611671987169,11.518635781897682,654,10,16,10,,,1e-05,0.01,all

@@ -1,0 +1,26 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 1,12,30,144,6,5,5min,1,final,16.31895824475892,12.185215960050884,1900,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 10,12,30,144,6,5,5min,1,final,20.502339080272147,13.179125012195334,2087,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 11,12,30,144,6,5,5min,1,final,24.262998124123307,18.417837932783453,2113,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 12,12,30,144,6,5,5min,1,final,18.91294899790035,13.374791291613391,2386,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 13,12,30,144,6,5,5min,1,final,15.038603496372875,10.630130788041509,2264,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 14,12,30,144,6,5,5min,1,final,24.378748817148526,18.3404628649196,2264,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 15,12,30,144,6,5,5min,1,final,23.41793147904859,16.651893257221815,2458,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 16,12,30,144,6,5,5min,1,final,15.853208428535686,11.226838446328806,2150,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 17,12,30,144,6,5,5min,1,final,28.375581643680732,21.80500600391232,2373,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 18,12,30,144,6,5,5min,1,final,19.923198520220968,14.998211848931234,1952,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 19,12,30,144,6,5,5min,1,final,18.080815668581252,13.055249257186524,2461,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 2,12,30,144,6,5,5min,1,final,25.43675440770103,18.361763752347702,1928,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 20,12,30,144,6,5,5min,1,final,18.76995015927147,13.520036041878857,2514,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 21,12,30,144,6,5,5min,1,final,25.32153842267639,18.77953792371248,2375,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 22,12,30,144,6,5,5min,1,final,23.139722893922833,17.131220055893483,1957,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 23,12,30,144,6,5,5min,1,final,25.623312731914986,18.704358829235264,2277,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 24,12,30,144,6,5,5min,1,final,23.347050920257438,17.36427225239527,1868,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 25,12,30,144,6,5,5min,1,final,23.008876790061926,17.118417033267104,2011,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 3,12,30,144,6,5,5min,1,final,18.108820628253564,12.275661197799963,1691,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 4,12,30,144,6,5,5min,1,final,22.932160986881087,16.653270991193672,2404,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 5,12,30,144,6,5,5min,1,final,18.108045771761272,13.202711547772909,2328,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 6,12,30,144,6,5,5min,1,final,18.52409462517498,13.063086106439016,2249,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 7,12,30,144,6,5,5min,1,final,20.844098032653033,15.204736995135566,2378,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 8,12,30,144,6,5,5min,1,final,19.606817071683203,14.009864184374367,1464,10,16,10,,,1e-05,0.01,all
+19_AZT1D,test,full-shot,google/timesfm-2.5-200m-pytorch,Subject 9,12,30,144,6,5,5min,1,final,22.12494052353656,16.875790959165833,1854,10,16,10,,,1e-05,0.01,all
