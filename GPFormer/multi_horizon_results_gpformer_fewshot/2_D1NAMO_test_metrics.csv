@@ -1,0 +1,8 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,finetune_pattern,train_loss_mode,label_len,d_model,n_heads,e_layers,d_layers,d_ff,dropout,train_steps
+2_D1NAMO,test,few-shot,GPFormer,001,12,30,144,6,5,5min,1,final,26.55043334980106,19.257919522636815,134,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+2_D1NAMO,test,few-shot,GPFormer,002,12,30,144,6,5,5min,1,final,35.486024697006116,27.666877144691664,63,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+2_D1NAMO,test,few-shot,GPFormer,004,12,30,144,6,5,5min,1,final,45.45668430347613,38.78287049077879,45,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+2_D1NAMO,test,few-shot,GPFormer,005,12,30,144,6,5,5min,1,final,15.740478354587731,13.572478729595018,33,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+2_D1NAMO,test,few-shot,GPFormer,006,12,30,144,6,5,5min,1,final,11.11451477320512,8.908547425259727,107,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+2_D1NAMO,test,few-shot,GPFormer,007,12,30,144,6,5,5min,1,final,11.332730340846139,10.441300246447753,49,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+2_D1NAMO,test,few-shot,GPFormer,008,12,30,144,6,5,5min,1,final,14.651927281691218,12.041513864545772,80,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790

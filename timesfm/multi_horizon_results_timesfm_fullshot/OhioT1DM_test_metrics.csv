@@ -1,0 +1,13 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,540,12,30,144,6,5,5min,1,final,23.26987195169662,17.296412360990924,2327,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,544,12,30,144,6,5,5min,1,final,18.028333484531917,13.221031937361984,2151,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,552,12,30,144,6,5,5min,1,final,18.137840169234696,13.159188288418367,1496,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,559,12,30,144,6,5,5min,1,final,22.711419651481435,15.644904347709607,1089,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,563,12,30,144,6,5,5min,1,final,19.87409445255561,14.356967661208973,2276,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,567,12,30,144,6,5,5min,1,final,16.94797169122713,12.319166925324867,995,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,570,12,30,144,6,5,5min,1,final,17.664884631130768,12.408135280886533,2269,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,575,12,30,144,6,5,5min,1,final,24.028676818524755,15.76743996319166,2034,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,584,12,30,144,6,5,5min,1,final,23.823435998369874,17.11186361639915,2187,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,588,12,30,144,6,5,5min,1,final,19.710423448095813,14.62923195419051,2344,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,591,12,30,144,6,5,5min,1,final,22.54874729406496,16.663569186246015,2318,10,16,12,,,1e-05,0.01,all
+OhioT1DM,test,full-shot,google/timesfm-2.5-200m-pytorch,596,12,30,144,6,5,5min,1,final,18.959528626605852,13.65699650134561,2109,10,16,12,,,1e-05,0.01,all

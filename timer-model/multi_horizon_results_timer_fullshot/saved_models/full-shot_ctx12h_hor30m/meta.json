@@ -1,0 +1,18 @@
+{
+  "shot": "full-shot",
+  "model_name": "/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model",
+  "context_hours": 12,
+  "horizon_minutes": 30,
+  "context_steps": 144,
+  "horizon_steps": 6,
+  "train_epochs": 10,
+  "train_batch_size": 16,
+  "train_stride_steps": 12,
+  "max_train_steps": null,
+  "max_train_windows": null,
+  "lr": 1e-05,
+  "weight_decay": 0.01,
+  "train_loss_mode": "all",
+  "seed": 0,
+  "saved_at": "2026-01-30T06:59:11"
+}

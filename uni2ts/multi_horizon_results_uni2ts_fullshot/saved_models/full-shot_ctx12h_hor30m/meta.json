@@ -1,0 +1,19 @@
+{
+  "shot": "full-shot",
+  "model_name": "Salesforce/moirai-2.0-R-small",
+  "context_hours": 12,
+  "horizon_minutes": 30,
+  "context_steps": 144,
+  "horizon_steps": 6,
+  "train_epochs": 10,
+  "train_batch_size": 16,
+  "train_stride_steps": 12,
+  "max_train_steps": null,
+  "max_train_windows": null,
+  "lr": 1e-05,
+  "weight_decay": 0.01,
+  "finetune_pattern": "full",
+  "train_loss_mode": "all",
+  "seed": 0,
+  "saved_at": "2026-01-30T05:20:50"
+}

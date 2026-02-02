@@ -1,0 +1,33 @@
+2026-01-30 05:31:19,258 - INFO - Logging to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/predict_glucose_multiwindow_timer_zeroshot_20260130_053119.log
+2026-01-30 05:31:19,288 - INFO - Loading Timer model '/mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model' (cuda)
+2026-01-30 05:31:22,564 - INFO - Timer input_token_len=96
+2026-01-30 05:31:22,664 - INFO - 14_HUPA-UCM (test split): 25 participants
+2026-01-30 05:46:38,610 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/14_HUPA-UCM_test_metrics.csv (400 rows)
+2026-01-30 05:46:38,653 - INFO - 17_T1DM-UOM (test split): 17 participants
+2026-01-30 06:03:56,507 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/17_T1DM-UOM_test_metrics.csv (272 rows)
+2026-01-30 06:03:56,553 - INFO - 18_Bris-T1D Open (test split): 20 participants
+2026-01-30 06:55:03,928 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/18_Bris-T1D Open_test_metrics.csv (320 rows)
+2026-01-30 06:55:03,992 - INFO - 19_AZT1D (test split): 25 participants
+2026-01-30 07:05:05,151 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/19_AZT1D_test_metrics.csv (400 rows)
+2026-01-30 07:05:05,301 - INFO - 1_Hall2018 (test split): 52 participants
+2026-01-30 07:06:07,650 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/1_Hall2018_test_metrics.csv (678 rows)
+2026-01-30 07:06:07,673 - INFO - 2_D1NAMO (test split): 9 participants
+2026-01-30 07:06:11,703 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/2_D1NAMO_test_metrics.csv (74 rows)
+2026-01-30 07:06:12,340 - INFO - 3_Colas2019 (test split): 208 participants
+2026-01-30 07:06:13,221 - WARNING - 3_Colas2019 (test split): no metrics to write.
+2026-01-30 07:06:13,274 - INFO - BIG_IDEA_LAB (test split): 16 participants
+2026-01-30 07:06:57,773 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/BIG_IDEA_LAB_test_metrics.csv (251 rows)
+2026-01-30 07:06:57,915 - INFO - CGMacros (test split): 45 participants
+2026-01-30 07:09:57,744 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/CGMacros_test_metrics.csv (720 rows)
+2026-01-30 07:09:57,784 - INFO - ShanghaiT1DM (test split): 12 participants
+2026-01-30 07:11:11,424 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/ShanghaiT1DM_test_metrics.csv (192 rows)
+2026-01-30 07:11:11,734 - INFO - ShanghaiT2DM (test split): 100 participants
+2026-01-30 07:20:02,810 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/ShanghaiT2DM_test_metrics.csv (1543 rows)
+2026-01-30 07:20:02,877 - INFO - UCHTT1DM (test split): 20 participants
+2026-01-30 07:20:21,876 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/UCHTT1DM_test_metrics.csv (237 rows)
+2026-01-30 07:20:24,464 - INFO - 5_T1DEXI (test split): 502 participants
+2026-01-30 08:29:26,469 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/5_T1DEXI_test_metrics.csv (7862 rows)
+2026-01-30 08:29:26,651 - INFO - 8_DiaTrend (test split): 54 participants
+2026-01-30 10:33:33,685 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/8_DiaTrend_test_metrics.csv (864 rows)
+2026-01-30 10:33:33,725 - INFO - OhioT1DM (test split): 12 participants
+2026-01-30 10:36:08,522 - INFO - Saved metrics to /mnt/c/Users/leon/Code/GlucoseML_benchmark/timer-model/multi_horizon_results_timer_zeroshot/OhioT1DM_test_metrics.csv (192 rows)

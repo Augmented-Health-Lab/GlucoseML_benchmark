@@ -1,0 +1,13 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,finetune_pattern,train_loss_mode,label_len,d_model,n_heads,e_layers,d_layers,d_ff,dropout,train_steps
+ShanghaiT1DM,test,few-shot,GPFormer,1001,12,30,144,6,5,5min,1,final,15.201235417165815,11.2402930935915,246,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1002,12,30,144,6,5,5min,1,final,12.375078034959293,9.866264659405863,1045,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1003,12,30,144,6,5,5min,1,final,13.183846483598716,9.321797984282258,654,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1004,12,30,144,6,5,5min,1,final,13.086685258822477,9.640606341628256,401,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1005,12,30,144,6,5,5min,1,final,21.72933510953985,17.349527737212156,605,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1006,12,30,144,6,5,5min,1,final,19.568111950923036,13.965897820381434,2076,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1007,12,30,144,6,5,5min,1,final,13.261891332635537,10.16876100901994,653,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1008,12,30,144,6,5,5min,1,final,11.701517324079736,8.822806447556065,311,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1009,12,30,144,6,5,5min,1,final,8.641322359085008,5.9774578257054545,260,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1010,12,30,144,6,5,5min,1,final,12.194750695745004,9.652186487392516,402,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1011,12,30,144,6,5,5min,1,final,16.153341119558448,12.452217781940996,173,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+ShanghaiT1DM,test,few-shot,GPFormer,1012,12,30,144,6,5,5min,1,final,21.353489651980208,16.28912718018239,654,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790

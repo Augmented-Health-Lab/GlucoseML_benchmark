@@ -1,0 +1,161 @@
+2026-01-30 05:39:49,976 - INFO - Logging to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/predict_glucose_multiwindow_timesfm_fewshot_20260130_053949.log
+2026-01-30 05:39:49,976 - INFO - Device: cuda
+2026-01-30 05:39:49,987 - INFO - Training pool: training_dataset/mixed (549 participants)
+2026-01-30 05:39:51,787 - WARNING - /root/GML/training_dataset/mixed/CGMacros-044.csv: skipped while merging (No columns to parse from file)
+2026-01-30 05:39:51,787 - WARNING - train/CGMacros-044: skipped (No valid data points in ['/root/GML/training_dataset/mixed/CGMacros-044.csv'])
+2026-01-30 05:39:55,782 - INFO - 14_HUPA-UCM: test_participants=25
+2026-01-30 05:39:55,783 - INFO - 17_T1DM-UOM: test_participants=17
+2026-01-30 05:39:55,784 - INFO - 18_Bris-T1D Open: test_participants=20
+2026-01-30 05:39:55,784 - INFO - 19_AZT1D: test_participants=25
+2026-01-30 05:39:55,786 - INFO - 1_Hall2018: test_participants=52
+2026-01-30 05:39:55,786 - INFO - 2_D1NAMO: test_participants=9
+2026-01-30 05:39:55,799 - INFO - 3_Colas2019: test_participants=208
+2026-01-30 05:39:55,800 - INFO - BIG_IDEA_LAB: test_participants=16
+2026-01-30 05:39:55,801 - INFO - CGMacros: test_participants=45
+2026-01-30 05:39:55,802 - INFO - ShanghaiT1DM: test_participants=12
+2026-01-30 05:39:55,804 - INFO - ShanghaiT2DM: test_participants=100
+2026-01-30 05:39:55,804 - INFO - UCHTT1DM: test_participants=20
+2026-01-30 05:39:55,815 - INFO - 5_T1DEXI: test_participants=502
+2026-01-30 05:39:55,817 - INFO - 8_DiaTrend: test_participants=54
+2026-01-30 05:39:55,817 - INFO - OhioT1DM: test_participants=12
+2026-01-30 05:39:55,817 - INFO - Finetune mixed: ctx=12h hor=30m
+2026-01-30 05:39:56,329 - INFO - HTTP Request: HEAD https://hf-mirror.com/google/timesfm-2.5-200m-pytorch/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-01-30 05:39:56,432 - INFO - HTTP Request: HEAD https://hf-mirror.com/api/resolve-cache/models/google/timesfm-2.5-200m-pytorch/1d952420fba87f3c6dee4f240de0f1a0fbc790e3/config.json "HTTP/1.1 200 OK"
+2026-01-30 05:39:56,715 - INFO - HTTP Request: HEAD https://hf-mirror.com/google/timesfm-2.5-200m-pytorch/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+2026-01-30 05:39:56,856 - INFO - HTTP Request: HEAD https://hf-mirror.com/api/resolve-cache/models/google/timesfm-2.5-200m-pytorch/1d952420fba87f3c6dee4f240de0f1a0fbc790e3/config.json "HTTP/1.1 200 OK"
+2026-01-30 05:39:56,960 - INFO - HTTP Request: GET https://hf-mirror.com/api/resolve-cache/models/google/timesfm-2.5-200m-pytorch/1d952420fba87f3c6dee4f240de0f1a0fbc790e3/config.json "HTTP/1.1 200 OK"
+2026-01-30 05:39:56,965 - INFO - Downloading checkpoint from Hugging Face repo google/timesfm-2.5-200m-pytorch
+2026-01-30 05:39:57,239 - INFO - HTTP Request: HEAD https://hf-mirror.com/google/timesfm-2.5-200m-pytorch/resolve/main/model.safetensors "HTTP/1.1 302 Found"
+2026-01-30 05:39:57,241 - INFO - Loading checkpoint from: /root/.cache/huggingface/hub/models--google--timesfm-2.5-200m-pytorch/snapshots/1d952420fba87f3c6dee4f240de0f1a0fbc790e3/model.safetensors
+2026-01-30 05:40:09,387 - INFO - finetune step=50 epoch=1/10 loss=96.424248 windows=9277
+2026-01-30 05:40:18,330 - INFO - finetune step=100 epoch=1/10 loss=82.212357 windows=9277
+2026-01-30 05:40:27,532 - INFO - finetune step=150 epoch=1/10 loss=83.758102 windows=9277
+2026-01-30 05:40:36,864 - INFO - finetune step=200 epoch=1/10 loss=106.029327 windows=9277
+2026-01-30 05:40:46,172 - INFO - finetune step=250 epoch=1/10 loss=83.951004 windows=9277
+2026-01-30 05:40:55,518 - INFO - finetune step=300 epoch=1/10 loss=123.704330 windows=9277
+2026-01-30 05:41:04,687 - INFO - finetune step=350 epoch=1/10 loss=133.721085 windows=9277
+2026-01-30 05:41:13,977 - INFO - finetune step=400 epoch=1/10 loss=112.546936 windows=9277
+2026-01-30 05:41:22,890 - INFO - finetune step=450 epoch=1/10 loss=91.265617 windows=9277
+2026-01-30 05:41:32,311 - INFO - finetune step=500 epoch=1/10 loss=116.594055 windows=9277
+2026-01-30 05:41:41,869 - INFO - finetune step=550 epoch=1/10 loss=139.551270 windows=9277
+2026-01-30 05:41:51,326 - INFO - finetune step=600 epoch=2/10 loss=59.293301 windows=9277
+2026-01-30 05:42:00,833 - INFO - finetune step=650 epoch=2/10 loss=101.179031 windows=9277
+2026-01-30 05:42:10,221 - INFO - finetune step=700 epoch=2/10 loss=38.803314 windows=9277
+2026-01-30 05:42:19,413 - INFO - finetune step=750 epoch=2/10 loss=108.619919 windows=9277
+2026-01-30 05:42:28,623 - INFO - finetune step=800 epoch=2/10 loss=149.184113 windows=9277
+2026-01-30 05:42:37,870 - INFO - finetune step=850 epoch=2/10 loss=63.609489 windows=9277
+2026-01-30 05:42:47,040 - INFO - finetune step=900 epoch=2/10 loss=301.594116 windows=9277
+2026-01-30 05:42:56,246 - INFO - finetune step=950 epoch=2/10 loss=61.120464 windows=9277
+2026-01-30 05:43:05,496 - INFO - finetune step=1000 epoch=2/10 loss=112.449631 windows=9277
+2026-01-30 05:43:14,772 - INFO - finetune step=1050 epoch=2/10 loss=65.170456 windows=9277
+2026-01-30 05:43:24,005 - INFO - finetune step=1100 epoch=2/10 loss=63.194725 windows=9277
+2026-01-30 05:43:33,243 - INFO - finetune step=1150 epoch=2/10 loss=156.231003 windows=9277
+2026-01-30 05:43:42,196 - INFO - finetune step=1200 epoch=3/10 loss=85.830994 windows=9277
+2026-01-30 05:43:51,394 - INFO - finetune step=1250 epoch=3/10 loss=131.380386 windows=9277
+2026-01-30 05:44:00,697 - INFO - finetune step=1300 epoch=3/10 loss=66.064362 windows=9277
+2026-01-30 05:44:10,156 - INFO - finetune step=1350 epoch=3/10 loss=17.473301 windows=9277
+2026-01-30 05:44:19,850 - INFO - finetune step=1400 epoch=3/10 loss=20.429998 windows=9277
+2026-01-30 05:44:29,275 - INFO - finetune step=1450 epoch=3/10 loss=8.035984 windows=9277
+2026-01-30 05:44:38,519 - INFO - finetune step=1500 epoch=3/10 loss=50.169106 windows=9277
+2026-01-30 05:44:47,826 - INFO - finetune step=1550 epoch=3/10 loss=41.212799 windows=9277
+2026-01-30 05:44:57,101 - INFO - finetune step=1600 epoch=3/10 loss=145.883072 windows=9277
+2026-01-30 05:45:06,370 - INFO - finetune step=1650 epoch=3/10 loss=90.219872 windows=9277
+2026-01-30 05:45:15,661 - INFO - finetune step=1700 epoch=3/10 loss=35.232761 windows=9277
+2026-01-30 05:45:24,952 - INFO - finetune step=1750 epoch=4/10 loss=75.375656 windows=9277
+2026-01-30 05:45:34,101 - INFO - finetune step=1800 epoch=4/10 loss=58.160736 windows=9277
+2026-01-30 05:45:43,386 - INFO - finetune step=1850 epoch=4/10 loss=95.635796 windows=9277
+2026-01-30 05:45:52,715 - INFO - finetune step=1900 epoch=4/10 loss=56.624916 windows=9277
+2026-01-30 05:46:02,189 - INFO - finetune step=1950 epoch=4/10 loss=42.278877 windows=9277
+2026-01-30 05:46:11,591 - INFO - finetune step=2000 epoch=4/10 loss=41.966061 windows=9277
+2026-01-30 05:46:21,034 - INFO - finetune step=2050 epoch=4/10 loss=21.315456 windows=9277
+2026-01-30 05:46:30,737 - INFO - finetune step=2100 epoch=4/10 loss=32.030334 windows=9277
+2026-01-30 05:46:39,978 - INFO - finetune step=2150 epoch=4/10 loss=15.879958 windows=9277
+2026-01-30 05:46:49,128 - INFO - finetune step=2200 epoch=4/10 loss=107.730057 windows=9277
+2026-01-30 05:46:58,462 - INFO - finetune step=2250 epoch=4/10 loss=69.914352 windows=9277
+2026-01-30 05:47:07,652 - INFO - finetune step=2300 epoch=4/10 loss=22.837248 windows=9277
+2026-01-30 05:47:16,995 - INFO - finetune step=2350 epoch=5/10 loss=56.606384 windows=9277
+2026-01-30 05:47:26,224 - INFO - finetune step=2400 epoch=5/10 loss=40.064445 windows=9277
+2026-01-30 05:47:35,654 - INFO - finetune step=2450 epoch=5/10 loss=11.407129 windows=9277
+2026-01-30 05:47:44,898 - INFO - finetune step=2500 epoch=5/10 loss=15.888191 windows=9277
+2026-01-30 05:47:54,220 - INFO - finetune step=2550 epoch=5/10 loss=59.034954 windows=9277
+2026-01-30 05:48:03,392 - INFO - finetune step=2600 epoch=5/10 loss=40.352234 windows=9277
+2026-01-30 05:48:12,907 - INFO - finetune step=2650 epoch=5/10 loss=52.293549 windows=9277
+2026-01-30 05:48:22,615 - INFO - finetune step=2700 epoch=5/10 loss=14.280655 windows=9277
+2026-01-30 05:48:32,118 - INFO - finetune step=2750 epoch=5/10 loss=47.629578 windows=9277
+2026-01-30 05:48:41,663 - INFO - finetune step=2800 epoch=5/10 loss=9.262366 windows=9277
+2026-01-30 05:48:50,915 - INFO - finetune step=2850 epoch=5/10 loss=26.304871 windows=9277
+2026-01-30 05:49:00,097 - INFO - finetune step=2900 epoch=6/10 loss=25.027151 windows=9277
+2026-01-30 05:49:09,437 - INFO - finetune step=2950 epoch=6/10 loss=122.994003 windows=9277
+2026-01-30 05:49:18,296 - INFO - finetune step=3000 epoch=6/10 loss=33.744850 windows=9277
+2026-01-30 05:49:27,696 - INFO - finetune step=3050 epoch=6/10 loss=30.806112 windows=9277
+2026-01-30 05:49:36,947 - INFO - finetune step=3100 epoch=6/10 loss=26.617567 windows=9277
+2026-01-30 05:49:46,225 - INFO - finetune step=3150 epoch=6/10 loss=36.566360 windows=9277
+2026-01-30 05:49:55,415 - INFO - finetune step=3200 epoch=6/10 loss=26.005127 windows=9277
+2026-01-30 05:50:04,374 - INFO - finetune step=3250 epoch=6/10 loss=35.262405 windows=9277
+2026-01-30 05:50:13,631 - INFO - finetune step=3300 epoch=6/10 loss=17.068939 windows=9277
+2026-01-30 05:50:22,815 - INFO - finetune step=3350 epoch=6/10 loss=15.420334 windows=9277
+2026-01-30 05:50:32,402 - INFO - finetune step=3400 epoch=6/10 loss=26.451458 windows=9277
+2026-01-30 05:50:41,623 - INFO - finetune step=3450 epoch=6/10 loss=30.652599 windows=9277
+2026-01-30 05:50:50,959 - INFO - finetune step=3500 epoch=7/10 loss=12.712303 windows=9277
+2026-01-30 05:51:00,308 - INFO - finetune step=3550 epoch=7/10 loss=8.240475 windows=9277
+2026-01-30 05:51:09,381 - INFO - finetune step=3600 epoch=7/10 loss=20.471889 windows=9277
+2026-01-30 05:51:18,509 - INFO - finetune step=3650 epoch=7/10 loss=13.495334 windows=9277
+2026-01-30 05:51:27,690 - INFO - finetune step=3700 epoch=7/10 loss=10.531837 windows=9277
+2026-01-30 05:51:36,849 - INFO - finetune step=3750 epoch=7/10 loss=29.114208 windows=9277
+2026-01-30 05:51:45,428 - INFO - finetune step=3800 epoch=7/10 loss=27.351849 windows=9277
+2026-01-30 05:51:53,706 - INFO - finetune step=3850 epoch=7/10 loss=9.504858 windows=9277
+2026-01-30 05:52:02,495 - INFO - finetune step=3900 epoch=7/10 loss=24.806755 windows=9277
+2026-01-30 05:52:11,030 - INFO - finetune step=3950 epoch=7/10 loss=11.879283 windows=9277
+2026-01-30 05:52:19,607 - INFO - finetune step=4000 epoch=7/10 loss=14.063406 windows=9277
+2026-01-30 05:52:28,750 - INFO - finetune step=4050 epoch=7/10 loss=14.966449 windows=9277
+2026-01-30 05:52:38,217 - INFO - finetune step=4100 epoch=8/10 loss=8.278440 windows=9277
+2026-01-30 05:52:47,726 - INFO - finetune step=4150 epoch=8/10 loss=23.841528 windows=9277
+2026-01-30 05:52:57,314 - INFO - finetune step=4200 epoch=8/10 loss=15.084187 windows=9277
+2026-01-30 05:53:06,835 - INFO - finetune step=4250 epoch=8/10 loss=20.621162 windows=9277
+2026-01-30 05:53:16,244 - INFO - finetune step=4300 epoch=8/10 loss=10.160860 windows=9277
+2026-01-30 05:53:25,333 - INFO - finetune step=4350 epoch=8/10 loss=4.834140 windows=9277
+2026-01-30 05:53:34,651 - INFO - finetune step=4400 epoch=8/10 loss=7.689910 windows=9277
+2026-01-30 05:53:43,897 - INFO - finetune step=4450 epoch=8/10 loss=61.459438 windows=9277
+2026-01-30 05:53:53,162 - INFO - finetune step=4500 epoch=8/10 loss=11.612068 windows=9277
+2026-01-30 05:54:02,474 - INFO - finetune step=4550 epoch=8/10 loss=24.497131 windows=9277
+2026-01-30 05:54:11,712 - INFO - finetune step=4600 epoch=8/10 loss=11.875411 windows=9277
+2026-01-30 05:54:20,942 - INFO - finetune step=4650 epoch=9/10 loss=38.474098 windows=9277
+2026-01-30 05:54:29,949 - INFO - finetune step=4700 epoch=9/10 loss=16.349735 windows=9277
+2026-01-30 05:54:39,190 - INFO - finetune step=4750 epoch=9/10 loss=55.250984 windows=9277
+2026-01-30 05:54:48,596 - INFO - finetune step=4800 epoch=9/10 loss=10.815090 windows=9277
+2026-01-30 05:54:58,070 - INFO - finetune step=4850 epoch=9/10 loss=8.096769 windows=9277
+2026-01-30 05:55:07,731 - INFO - finetune step=4900 epoch=9/10 loss=10.028529 windows=9277
+2026-01-30 05:55:17,295 - INFO - finetune step=4950 epoch=9/10 loss=12.952804 windows=9277
+2026-01-30 05:55:27,090 - INFO - finetune step=5000 epoch=9/10 loss=24.279943 windows=9277
+2026-01-30 05:55:36,222 - INFO - finetune step=5050 epoch=9/10 loss=11.461501 windows=9277
+2026-01-30 05:55:45,500 - INFO - finetune step=5100 epoch=9/10 loss=13.057526 windows=9277
+2026-01-30 05:55:54,810 - INFO - finetune step=5150 epoch=9/10 loss=13.764834 windows=9277
+2026-01-30 05:56:04,028 - INFO - finetune step=5200 epoch=9/10 loss=19.339060 windows=9277
+2026-01-30 05:56:13,286 - INFO - finetune step=5250 epoch=10/10 loss=11.352997 windows=9277
+2026-01-30 05:56:22,362 - INFO - finetune step=5300 epoch=10/10 loss=15.336767 windows=9277
+2026-01-30 05:56:31,542 - INFO - finetune step=5350 epoch=10/10 loss=7.455027 windows=9277
+2026-01-30 05:56:40,729 - INFO - finetune step=5400 epoch=10/10 loss=20.271145 windows=9277
+2026-01-30 05:56:49,933 - INFO - finetune step=5450 epoch=10/10 loss=22.268215 windows=9277
+2026-01-30 05:56:59,222 - INFO - finetune step=5500 epoch=10/10 loss=5.871059 windows=9277
+2026-01-30 05:57:08,719 - INFO - finetune step=5550 epoch=10/10 loss=45.302349 windows=9277
+2026-01-30 05:57:18,465 - INFO - finetune step=5600 epoch=10/10 loss=10.978815 windows=9277
+2026-01-30 05:57:27,913 - INFO - finetune step=5650 epoch=10/10 loss=23.873135 windows=9277
+2026-01-30 05:57:37,576 - INFO - finetune step=5700 epoch=10/10 loss=10.957342 windows=9277
+2026-01-30 05:57:46,685 - INFO - finetune step=5750 epoch=10/10 loss=12.548205 windows=9277
+2026-01-30 05:57:54,000 - INFO - finetune done: total_steps=5790
+2026-01-30 05:57:56,061 - INFO - Saved trained model to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/saved_models/few-shot_ctx12h_hor30m
+2026-01-30 12:57:50,841 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/14_HUPA-UCM_test_metrics.csv (25 rows)
+2026-01-30 12:57:50,844 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/17_T1DM-UOM_test_metrics.csv (17 rows)
+2026-01-30 12:57:50,847 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/18_Bris-T1D Open_test_metrics.csv (20 rows)
+2026-01-30 12:57:50,849 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/19_AZT1D_test_metrics.csv (25 rows)
+2026-01-30 12:57:50,853 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/1_Hall2018_test_metrics.csv (48 rows)
+2026-01-30 12:57:50,855 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/2_D1NAMO_test_metrics.csv (7 rows)
+2026-01-30 12:57:50,856 - WARNING - 3_Colas2019: no metrics to write.
+2026-01-30 12:57:50,858 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/BIG_IDEA_LAB_test_metrics.csv (16 rows)
+2026-01-30 12:57:50,861 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/CGMacros_test_metrics.csv (45 rows)
+2026-01-30 12:57:50,864 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/ShanghaiT1DM_test_metrics.csv (12 rows)
+2026-01-30 12:57:50,868 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/ShanghaiT2DM_test_metrics.csv (99 rows)
+2026-01-30 12:57:50,870 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/UCHTT1DM_test_metrics.csv (18 rows)
+2026-01-30 12:57:50,879 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/5_T1DEXI_test_metrics.csv (493 rows)
+2026-01-30 12:57:50,882 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/8_DiaTrend_test_metrics.csv (54 rows)
+2026-01-30 12:57:50,885 - INFO - Saved metrics to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/OhioT1DM_test_metrics.csv (12 rows)

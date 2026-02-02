@@ -1,0 +1,22 @@
+{
+  "attn_dropout_p": 0,
+  "d_ff": 1024,
+  "d_model": 384,
+  "dropout_p": 0,
+  "max_seq_len": 512,
+  "num_layers": 6,
+  "num_predict_token": 4,
+  "patch_size": 16,
+  "quantile_levels": [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "scaling": true
+}

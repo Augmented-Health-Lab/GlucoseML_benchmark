@@ -1,0 +1,21 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,finetune_pattern,train_loss_mode,label_len,d_model,n_heads,e_layers,d_layers,d_ff,dropout,train_steps
+18_Bris-T1D Open,test,full-shot,GPFormer,P01,12,30,144,6,5,5min,1,final,17.739262878260593,11.492936519655377,11495,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P02,12,30,144,6,5,5min,1,final,14.68182180801911,9.200594086769637,11912,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P03,12,30,144,6,5,5min,1,final,23.472237790614262,17.02040278762602,4747,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P04,12,30,144,6,5,5min,1,final,26.200066748305584,19.114533318953043,12459,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P05,12,30,144,6,5,5min,1,final,15.55554689107463,9.946144396766782,12674,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P06,12,30,144,6,5,5min,1,final,17.98538182771453,12.129638809879603,11372,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P07,12,30,144,6,5,5min,1,final,30.846139144985134,21.681273759277488,11839,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P10,12,30,144,6,5,5min,1,final,14.705050219028836,8.220801086959822,11637,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P11,12,30,144,6,5,5min,1,final,19.254557118825794,12.69485591627058,12621,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P12,12,30,144,6,5,5min,1,final,16.075489586100485,11.35928673762152,12666,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P13,12,30,144,6,5,5min,1,final,11.574263057687924,7.703481318821044,5298,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P15,12,30,144,6,5,5min,1,final,11.871483772693706,5.054352938827021,12390,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P16,12,30,144,6,5,5min,1,final,20.336863682295736,14.89370553919365,11270,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P17,12,30,144,6,5,5min,1,final,16.73611288987761,10.859586038572036,11073,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P18,12,30,144,6,5,5min,1,final,19.84755080208856,10.82186127245406,12681,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P19,12,30,144,6,5,5min,1,final,16.643540997818327,11.193366491748383,11584,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P21,12,30,144,6,5,5min,1,final,19.178210194492358,13.060371707834316,9948,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P22,12,30,144,6,5,5min,1,final,14.15235524976626,9.69418829759534,11832,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P23,12,30,144,6,5,5min,1,final,27.171275003356495,18.94667698329339,5469,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520
+18_Bris-T1D Open,test,full-shot,GPFormer,P24,12,30,144,6,5,5min,1,final,24.19423064144684,17.495530982629738,11976,10,16,12,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,112520

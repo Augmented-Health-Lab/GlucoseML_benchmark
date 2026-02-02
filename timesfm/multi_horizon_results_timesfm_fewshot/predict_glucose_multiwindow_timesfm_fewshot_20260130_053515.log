@@ -1,0 +1,37 @@
+2026-01-30 05:35:15,739 - INFO - Logging to /root/GML/timesfm/multi_horizon_results_timesfm_fewshot/predict_glucose_multiwindow_timesfm_fewshot_20260130_053515.log
+2026-01-30 05:35:15,739 - INFO - Device: cuda
+2026-01-30 05:35:15,750 - INFO - Training pool: training_dataset/mixed (549 participants)
+2026-01-30 05:35:17,514 - WARNING - /root/GML/training_dataset/mixed/CGMacros-044.csv: skipped while merging (No columns to parse from file)
+2026-01-30 05:35:17,514 - WARNING - train/CGMacros-044: skipped (No valid data points in ['/root/GML/training_dataset/mixed/CGMacros-044.csv'])
+2026-01-30 05:35:21,533 - INFO - 14_HUPA-UCM: test_participants=25
+2026-01-30 05:35:21,534 - INFO - 17_T1DM-UOM: test_participants=17
+2026-01-30 05:35:21,535 - INFO - 18_Bris-T1D Open: test_participants=20
+2026-01-30 05:35:21,536 - INFO - 19_AZT1D: test_participants=25
+2026-01-30 05:35:21,537 - INFO - 1_Hall2018: test_participants=52
+2026-01-30 05:35:21,538 - INFO - 2_D1NAMO: test_participants=9
+2026-01-30 05:35:21,542 - INFO - 3_Colas2019: test_participants=208
+2026-01-30 05:35:21,543 - INFO - BIG_IDEA_LAB: test_participants=16
+2026-01-30 05:35:21,544 - INFO - CGMacros: test_participants=45
+2026-01-30 05:35:21,544 - INFO - ShanghaiT1DM: test_participants=12
+2026-01-30 05:35:21,546 - INFO - ShanghaiT2DM: test_participants=100
+2026-01-30 05:35:21,547 - INFO - UCHTT1DM: test_participants=20
+2026-01-30 05:35:21,558 - INFO - 5_T1DEXI: test_participants=502
+2026-01-30 05:35:21,560 - INFO - 8_DiaTrend: test_participants=54
+2026-01-30 05:35:21,560 - INFO - OhioT1DM: test_participants=12
+2026-01-30 05:35:21,560 - INFO - Finetune mixed: ctx=12h hor=30m
+2026-01-30 05:35:41,635 - WARNING - Finetune failed ctx=12h hor=30m (Force download failed due to the above error.)
+2026-01-30 05:35:41,636 - WARNING - 14_HUPA-UCM: no metrics to write.
+2026-01-30 05:35:41,636 - WARNING - 17_T1DM-UOM: no metrics to write.
+2026-01-30 05:35:41,637 - WARNING - 18_Bris-T1D Open: no metrics to write.
+2026-01-30 05:35:41,637 - WARNING - 19_AZT1D: no metrics to write.
+2026-01-30 05:35:41,637 - WARNING - 1_Hall2018: no metrics to write.
+2026-01-30 05:35:41,638 - WARNING - 2_D1NAMO: no metrics to write.
+2026-01-30 05:35:41,638 - WARNING - 3_Colas2019: no metrics to write.
+2026-01-30 05:35:41,638 - WARNING - BIG_IDEA_LAB: no metrics to write.
+2026-01-30 05:35:41,639 - WARNING - CGMacros: no metrics to write.
+2026-01-30 05:35:41,639 - WARNING - ShanghaiT1DM: no metrics to write.
+2026-01-30 05:35:41,639 - WARNING - ShanghaiT2DM: no metrics to write.
+2026-01-30 05:35:41,639 - WARNING - UCHTT1DM: no metrics to write.
+2026-01-30 05:35:41,640 - WARNING - 5_T1DEXI: no metrics to write.
+2026-01-30 05:35:41,640 - WARNING - 8_DiaTrend: no metrics to write.
+2026-01-30 05:35:41,640 - WARNING - OhioT1DM: no metrics to write.

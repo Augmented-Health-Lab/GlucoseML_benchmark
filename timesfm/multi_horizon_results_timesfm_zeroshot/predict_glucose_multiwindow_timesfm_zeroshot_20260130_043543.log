@@ -1,0 +1,2 @@
+2026-01-30 04:35:43,667 - INFO - Logging to /root/GML/timesfm/multi_horizon_results_timesfm_zeroshot/predict_glucose_multiwindow_timesfm_zeroshot_20260130_043543.log
+2026-01-30 04:35:43,667 - INFO - Loading TimesFM model 'google/timesfm-2.5-200m-pytorch'

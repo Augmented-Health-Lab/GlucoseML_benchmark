@@ -1,0 +1,17 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,finetune_pattern,train_loss_mode,label_len,d_model,n_heads,e_layers,d_layers,d_ff,dropout,train_steps
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_001,12,30,144,6,5,5min,1,final,16.56930433462907,11.23082559832779,364,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_002,12,30,144,6,5,5min,1,final,22.378248217894843,16.254275280277145,275,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_003,12,30,144,6,5,5min,1,final,18.484278702393638,10.917878362791752,312,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_004,12,30,144,6,5,5min,1,final,12.240641476843201,8.712426809057611,285,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_005,12,30,144,6,5,5min,1,final,12.930581833631557,8.540407378858772,363,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_006,12,30,144,6,5,5min,1,final,20.762146768088652,12.6707553202401,421,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_007,12,30,144,6,5,5min,1,final,14.76786850508844,10.484713530849007,293,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_008,12,30,144,6,5,5min,1,final,19.47185170742896,12.678090422099322,354,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_009,12,30,144,6,5,5min,1,final,16.902998492850475,10.695336310901006,313,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_010,12,30,144,6,5,5min,1,final,23.26684630967702,13.666971843487692,232,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_011,12,30,144,6,5,5min,1,final,17.978474528016953,11.44865795571412,423,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_012,12,30,144,6,5,5min,1,final,19.159477388513835,12.707226133039045,137,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_013,12,30,144,6,5,5min,1,final,21.577679435300546,14.2459022012638,247,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_014,12,30,144,6,5,5min,1,final,22.228332084195152,14.765157784143767,299,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_015,12,30,144,6,5,5min,1,final,14.762499728138481,10.65235879188887,154,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790
+BIG_IDEA_LAB,test,few-shot,GPFormer,Dexcom_016,12,30,144,6,5,5min,1,final,21.435698396501547,14.336068832790973,308,10,16,240,,,0.001,0.01,full,all,6,128,8,3,1,512,0.05,5790

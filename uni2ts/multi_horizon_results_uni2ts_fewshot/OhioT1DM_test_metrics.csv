@@ -1,0 +1,13 @@
+dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,finetune_pattern,train_loss_mode
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,540,12,30,144,6,5,5min,1,final,24.011242477906265,17.76185560369881,2327,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,544,12,30,144,6,5,5min,1,final,19.07692932129338,13.649046102937906,2151,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,552,12,30,144,6,5,5min,1,final,18.616970383000677,13.503443797004413,1496,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,559,12,30,144,6,5,5min,1,final,22.920203879098217,15.581522406515887,1089,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,563,12,30,144,6,5,5min,1,final,20.015279018008968,14.436966093227607,2276,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,567,12,30,144,6,5,5min,1,final,17.78386900232365,12.468632319464755,995,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,570,12,30,144,6,5,5min,1,final,16.630665318935527,11.72231995812488,2269,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,575,12,30,144,6,5,5min,1,final,24.79018369222333,15.95923642633939,2034,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,584,12,30,144,6,5,5min,1,final,25.99702660610112,17.92318250798285,2187,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,588,12,30,144,6,5,5min,1,final,21.264466466453985,15.549942023111285,2344,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,591,12,30,144,6,5,5min,1,final,23.79236701741891,17.48074393646793,2318,10,16,240,,,1e-05,0.01,full,all
+OhioT1DM,test,few-shot,Salesforce/moirai-2.0-R-small,596,12,30,144,6,5,5min,1,final,20.71503749174564,14.59391665289107,2109,10,16,240,,,1e-05,0.01,full,all
