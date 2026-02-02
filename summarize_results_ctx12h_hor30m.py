@@ -16,7 +16,19 @@ class ModelSpec:
 def _iter_datasets_from_test_root(test_root: Path) -> Iterable[str]:
     if not test_root.exists():
         return []
-    return sorted([p.name for p in test_root.iterdir() if p.is_dir()])
+
+    # `test_dataset/controlled_dataset` is a container folder that holds multiple
+    # datasets as subfolders (e.g., 5_T1DEXI, 8_DiaTrend, OhioT1DM). For summary
+    # tables we treat those subfolders as independent datasets.
+    datasets = []
+    for p in test_root.iterdir():
+        if not p.is_dir():
+            continue
+        if p.name == "controlled_dataset":
+            datasets.extend([c.name for c in p.iterdir() if c.is_dir()])
+            continue
+        datasets.append(p.name)
+    return sorted(datasets)
 
 
 def _discover_metrics_files(results_root: Path, suffix: str = "_test_metrics.csv") -> Dict[str, Path]:
@@ -25,6 +37,9 @@ def _discover_metrics_files(results_root: Path, suffix: str = "_test_metrics.csv
     out: Dict[str, Path] = {}
     for p in results_root.glob(f"*{suffix}"):
         dataset = p.name[: -len(suffix)]
+        # controlled_dataset is a container folder; we summarize its children instead.
+        if dataset == "controlled_dataset":
+            continue
         out[dataset] = p
     return out
 
@@ -127,6 +142,10 @@ def main() -> int:
         "Hall2018",
         "DINAMO",
         "Colas2019",
+        # controlled_dataset (in this order, appended at the end)
+        "OhioT1DM",
+        "DiaTrend",
+        "T1DEXI",
     ]
 
     models = [
@@ -155,6 +174,16 @@ def main() -> int:
                 "zeroshot": Path("timesfm/multi_horizon_results_timesfm_zeroshot"),
                 "fullshot": Path("timesfm/multi_horizon_results_timesfm_fullshot"),
                 "fewshot": Path("timesfm/multi_horizon_results_timesfm_fewshot"),
+            },
+        ),
+        ModelSpec(
+            key="gpformer",
+            display_name="GPFormer",
+            results_roots={
+                # Keep keys for all shots so the main loop doesn't KeyError.
+                "zeroshot": Path("GPFormer/multi_horizon_results_gpformer_zeroshot"),
+                "fullshot": Path("GPFormer/multi_horizon_results_gpformer_fullshot"),
+                "fewshot": Path("GPFormer/multi_horizon_results_gpformer_fewshot"),
             },
         ),
     ]

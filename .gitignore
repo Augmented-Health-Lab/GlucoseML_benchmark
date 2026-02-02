@@ -2,3 +2,7 @@ chronos-forecasting
 test_dataset
 training_dataset
 
+# Large model checkpoints (avoid pushing to GitHub)
+*.safetensors
+*.pt
+
