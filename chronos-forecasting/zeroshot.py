@@ -1,33 +1,51 @@
-"""
-Zero-shot evaluation script for Chronos-2 on glucose monitoring datasets.
-Supports multiple datasets and context lengths with configurable parameters.
-"""
-
 import os
 import argparse
-import pandas as pd
-import numpy as np
-from pathlib import Path
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from datasets import load_dataset
 import torch
-
-# Set environment variable for GPU usage
+# Use only 1 GPU if available
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from chronos import BaseChronosPipeline, Chronos2Pipeline
+import os
+from pathlib import Path
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
+# Load the Chronos-2 pipeline
+# GPU recommended for faster inference, but CPU is also supported using device_map="cpu"
+if torch.cuda.is_available():
+    device = "cuda"
+elif torch.backends.mps.is_available():
+    device = "mps"
+else:
+    device = "cpu"
 
-def load_and_prepare_data(file_path):
-    """Load and prepare the glucose monitoring data."""
-    context_df = pd.read_csv(file_path)
-    df = context_df.copy()
-    df = df.rename(columns={'BGvalue': 'target'})
-    df['item_id'] = 'patient_1'
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
-    df = df.sort_values('timestamp').reset_index(drop=True)
-    df = df[['item_id', 'timestamp', 'target']]
+pipeline = BaseChronosPipeline.from_pretrained(
+    "amazon/chronos-2",
+    device_map=device
+)
+pipeline: Chronos2Pipeline = BaseChronosPipeline.from_pretrained("amazon/chronos-2", device_map=device)
+
+def load_and_prepare_data_from_hf(subject):
+    """Load and prepare glucose data from HuggingFace row."""
+
+    df = pd.DataFrame({
+        "timestamp": subject["timestamp"],
+        "target": subject["BGvalue"]
+    })
+
+    df["item_id"] = subject["subject_id"]
+
+    # Convert numeric timestamp back to datetime (if needed)
+    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
+
+    df = df.sort_values("timestamp").reset_index(drop=True)
+
+    df = df[["item_id", "timestamp", "target"]]
+
     return df
-
 
 def split_into_sequences(df, gap_threshold_hours=1):
     """Split data into continuous sequences based on time gaps."""
@@ -43,7 +61,6 @@ def split_into_sequences(df, gap_threshold_hours=1):
         sequences.append(group)
 
     return sequences
-
 
 def rolling_window_forecast(sequences, pipeline, context_length, prediction_length=18, step_size=1, verbose=False):
     """
@@ -80,6 +97,8 @@ def rolling_window_forecast(sequences, pipeline, context_length, prediction_leng
     all_timestamps = []
     all_sequence_ids = []
 
+    total_windows = 0
+
     for seq_idx, seq_df in enumerate(sequences):
         seq_length = len(seq_df)
         max_start_idx = seq_length - context_length - prediction_length
@@ -88,6 +107,9 @@ def rolling_window_forecast(sequences, pipeline, context_length, prediction_leng
             if verbose:
                 print(f"    Seq {seq_idx+1}: Too short ({seq_length} points), skipping...")
             continue
+
+        num_windows = max_start_idx + 1
+        total_windows += num_windows
 
         for start_idx in range(0, max_start_idx + 1, step_size):
             end_idx = start_idx + context_length
@@ -118,7 +140,6 @@ def rolling_window_forecast(sequences, pipeline, context_length, prediction_leng
                 continue
 
     return all_predictions, all_ground_truth, all_timestamps, all_sequence_ids
-
 
 def calculate_metrics(all_predictions, all_ground_truth, horizon_steps):
     """Calculate RMSE and MAE for different prediction horizons."""
@@ -157,16 +178,9 @@ def calculate_metrics(all_predictions, all_ground_truth, horizon_steps):
 
     return results
 
+def evaluate_single_patient(df, patient_name, pipeline, context_lengths,
+                            prediction_length=18, step_size=1):
 
-def evaluate_single_patient(file_path, pipeline, context_lengths, prediction_length=18, step_size=1):
-    """
-    Evaluate a single patient across multiple context lengths.
-
-    Returns:
-    --------
-    patient_results : dict
-        Dictionary with results for each context length
-    """
     horizon_steps = {
         '15min': 3,
         '30min': 6,
@@ -174,13 +188,17 @@ def evaluate_single_patient(file_path, pipeline, context_lengths, prediction_len
         '90min': 18
     }
 
-    patient_name = Path(file_path).stem
+    # patient_name = subject["subject_id"]
 
     try:
-        # Load and prepare data
-        df = load_and_prepare_data(file_path)
+        # Load HF data
+        df = df.copy()
+        df = df.rename(columns={"BGvalue": "target"})
+        df["item_id"] = patient_name
+        df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s")
+        df = df.sort_values("timestamp").reset_index(drop=True)
+        df = df[["item_id", "timestamp", "target"]]
 
-        # Split into sequences
         sequences = split_into_sequences(df, gap_threshold_hours=1)
 
         print(f"  Patient: {patient_name}")
@@ -188,23 +206,30 @@ def evaluate_single_patient(file_path, pipeline, context_lengths, prediction_len
 
         patient_results = {}
 
-        # Evaluate for each context length
         for context_length in context_lengths:
-            # Perform rolling window forecasting
+
             all_predictions, all_ground_truth, all_timestamps, all_sequence_ids = rolling_window_forecast(
-                sequences, pipeline, context_length, prediction_length, step_size, verbose=False
+                sequences,
+                pipeline,
+                context_length,
+                prediction_length,
+                step_size,
+                verbose=False
             )
 
             if len(all_predictions) == 0:
-                print(f"    Context {context_length}: No predictions (insufficient data)")
                 patient_results[context_length] = None
                 continue
 
-            # Calculate metrics
-            results = calculate_metrics(all_predictions, all_ground_truth, horizon_steps)
+            results = calculate_metrics(
+                all_predictions,
+                all_ground_truth,
+                horizon_steps
+            )
+
             patient_results[context_length] = results
 
-            print(f"    Context {context_length}: {len(all_predictions)} predictions")
+            print(f"    Context {context_length}: {len(all_predictions)} windows")
 
         return patient_results
 
@@ -268,7 +293,6 @@ def aggregate_results_across_patients(all_patient_results, context_lengths):
 
     return pd.DataFrame(summary_data)
 
-
 def save_detailed_results(all_patient_results, context_lengths, output_dir='./results'):
     """Save detailed per-patient results to CSV files."""
     os.makedirs(output_dir, exist_ok=True)
@@ -299,139 +323,86 @@ def save_detailed_results(all_patient_results, context_lengths, output_dir='./re
             detail_df.to_csv(output_file, index=False)
             print(f"Saved: {output_file}")
 
+def main(args):
 
-def print_summary(summary_df):
-    """Print formatted summary of results."""
-    print("\n" + "="*90)
-    print("SUMMARY: AVERAGE PERFORMANCE ACROSS ALL PATIENTS")
-    print("="*90)
+    ds = load_dataset("byluuu/gluco-tsfm-benchmark")   # change to yours
+    split = args.split
 
-    # Print by horizon
-    for horizon in ['15min', '30min', '60min', '90min']:
-        print(f"\n{horizon.upper()} Prediction Horizon:")
-        print("-"*90)
-        print(f"{'Context':<10} {'Hours':<10} {'RMSE (Mean±Std)':<25} {'MAE (Mean±Std)':<25} {'N Patients':<15}")
-        print("-"*90)
+    context_lengths = [12, 48, 96, 144, 192, 288]
 
-        horizon_data = summary_df[summary_df['Horizon'] == horizon]
-        for _, row in horizon_data.iterrows():
-            rmse_str = f"{row['RMSE_Mean']:.2f}±{row['RMSE_Std']:.2f}" if not np.isnan(row['RMSE_Mean']) else "N/A"
-            mae_str = f"{row['MAE_Mean']:.2f}±{row['MAE_Std']:.2f}" if not np.isnan(row['MAE_Mean']) else "N/A"
-            print(f"{int(row['Context_Length']):<10} {row['Context_Hours']:<10.1f} {rmse_str:<25} {mae_str:<25} {int(row['N_Patients']):<15}")
+    print(f"\nRunning with step_size = {args.step_size}")
+    print(f"Split = {split}")
 
-    print("\n" + "="*90)
+    dataset_names = sorted(set(ds[split]["dataset"]))
 
+    for dataset_name in dataset_names:
 
-def main():
-    parser = argparse.ArgumentParser(description='Zero-shot evaluation of Chronos-2 on glucose monitoring datasets')
-    
-    parser.add_argument('--data_dir', type=str, required=True,
-                        help='Directory containing patient CSV files')
-    parser.add_argument('--output_dir', type=str, default='./zeroshot_results',
-                        help='Directory to save results (default: ./zeroshot_results)')
-    parser.add_argument('--model_name', type=str, default='amazon/chronos-2',
-                        help='Model name or path (default: amazon/chronos-2)')
-    parser.add_argument('--context_lengths', type=int, nargs='+', default=[12, 48, 96, 144, 192, 288],
-                        help='Context lengths to evaluate (default: 12 48 96 144 192 288)')
-    parser.add_argument('--prediction_length', type=int, default=18,
-                        help='Prediction length (default: 18)')
-    parser.add_argument('--step_size', type=int, default=1,
-                        help='Step size for rolling window (default: 1)')
-    parser.add_argument('--device', type=str, default='cuda',
-                        choices=['cuda', 'cpu'],
-                        help='Device to use (default: cuda)')
-    parser.add_argument('--dataset_name', type=str, default=None,
-                        help='Optional dataset name for output files')
-    
-    args = parser.parse_args()
+        print("\n" + "=" * 80)
+        print(f"PROCESSING DATASET: {dataset_name}")
+        print("=" * 80)
 
-    # Check if data directory exists
-    if not os.path.exists(args.data_dir):
-        print(f"Error: Data directory '{args.data_dir}' does not exist!")
-        return
-
-    # Get dataset name from directory if not provided
-    dataset_name = args.dataset_name if args.dataset_name else Path(args.data_dir).name
-
-    # Create output directory
-    os.makedirs(args.output_dir, exist_ok=True)
-
-    print("="*70)
-    print("CHRONOS-2 ZERO-SHOT EVALUATION")
-    print("="*70)
-    print(f"Dataset: {dataset_name}")
-    print(f"Data directory: {args.data_dir}")
-    print(f"Output directory: {args.output_dir}")
-    print(f"Model: {args.model_name}")
-    print(f"Context lengths: {args.context_lengths}")
-    print(f"Prediction length: {args.prediction_length}")
-    print(f"Device: {args.device}")
-    print("="*70)
-
-    # Load the Chronos-2 pipeline
-    print(f"\nLoading model: {args.model_name}...")
-    pipeline = BaseChronosPipeline.from_pretrained(
-        args.model_name, 
-        device_map=args.device
-    )
-    print("Model loaded successfully!")
-
-    # Get all CSV files
-    csv_files = sorted(Path(args.data_dir).glob("*.csv"))
-    print(f"\nFound {len(csv_files)} patient files")
-
-    if len(csv_files) == 0:
-        print("No CSV files found in the specified directory!")
-        return
-
-    # Storage for all patient results
-    all_patient_results = {}
-
-    # Process each patient
-    print("\n" + "="*70)
-    print("PROCESSING ALL PATIENTS")
-    print("="*70)
-
-    for i, file_path in enumerate(csv_files, 1):
-        patient_name = file_path.stem
-        print(f"\n[{i}/{len(csv_files)}] Processing {patient_name}...")
-
-        patient_results = evaluate_single_patient(
-            file_path=str(file_path),
-            pipeline=pipeline,
-            context_lengths=args.context_lengths,
-            prediction_length=args.prediction_length,
-            step_size=args.step_size
+        subset = ds[split].filter(
+            lambda x: x["dataset"] == dataset_name
         )
 
-        all_patient_results[patient_name] = patient_results
+        print(f"Found {len(subset)} patients\n")
 
-    # Aggregate results
-    print("\n" + "="*70)
-    print("AGGREGATING RESULTS")
-    print("="*70)
+        all_patient_results = {}
 
-    summary_df = aggregate_results_across_patients(all_patient_results, args.context_lengths)
+        for i, subject in enumerate(subset, 1):
 
-    # Print summary
-    print_summary(summary_df)
+            patient_name = subject["subject_id"]
+            print(f"[{i}/{len(subset)}] {patient_name}")
 
-    # Save results
-    print("\n" + "="*70)
-    print("SAVING RESULTS")
-    print("="*70)
+            df = pd.DataFrame({
+                "timestamp": subject["timestamp"],
+                "BGvalue": subject["BGvalue"]
+            })
 
-    summary_file = f"{args.output_dir}/chronos2_summary_{dataset_name}.csv"
-    summary_df.to_csv(summary_file, index=False)
-    print(f"Summary saved to: {summary_file}")
+            patient_results = evaluate_single_patient(
+                df=df,
+                patient_name=patient_name,
+                pipeline=pipeline,
+                context_lengths=context_lengths,
+                prediction_length=args.prediction_length,
+                step_size=args.step_size
+            )
 
-    save_detailed_results(all_patient_results, args.context_lengths, 
-                         output_dir=f"{args.output_dir}/detailed_{dataset_name}")
+            all_patient_results[patient_name] = patient_results
 
-    print("\n" + "="*70)
-    print("EVALUATION COMPLETE!")
-    print("="*70)
+        summary_df = aggregate_results_across_patients(
+            all_patient_results,
+            context_lengths
+        )
 
+        out_dir = Path(f"./results/{dataset_name}/step_{args.step_size}")
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        summary_df.to_csv(out_dir / "summary.csv", index=False)
+
+        save_detailed_results(
+            all_patient_results,
+            context_lengths,
+            output_dir=out_dir / "patient_results"
+        )
+
+        print(f"Saved results to {out_dir}")
+
+    print("\nALL DATASETS COMPLETE")
+
+
+# ============================================================
+# ARGUMENTS
+# ============================================================
 
 if __name__ == "__main__":
-    main()
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--step_size", type=int, default=1)
+    parser.add_argument("--prediction_length", type=int, default=18)
+    parser.add_argument("--split", type=str, default="test")
+
+    args = parser.parse_args()
+
+    main(args)
