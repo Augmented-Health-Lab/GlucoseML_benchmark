@@ -1,0 +1,35 @@
+*.swp
+artifacts/
+__pycache__/
+.venv/
+*/__pycache__
+*.pyc
+random_search_configs/
+# *.yaml
+*.png
+notebooks_deprecated/
+process_rmse_result/
+# !original_ohio_experiments_60min/
+# !original_ohio_experiments_60min/*.yaml
+# !original_diatrend_experiments_60min/
+# !original_diatrend_experiments_60min/*.yaml
+# !original_t1dexi_experiments_60min/
+# !original_t1dexi_experiments_60min/*.yaml
+
+
+!original_vandoorn_experiments/
+!original_vandoorn_experiments/*.yaml
+!vandoorn_diatrend_experiments_30min/
+!vandoorn_diatrend_experiments_30min/*.yaml
+!vandoorn_t1dexi_experiments_30min/
+!vandoorn_t1dexi_experiments_30min/*.yaml
+
+requirements_before_downgrade.txt
+
+original_diatrend_experiments_60min
+original_ohio_experiments_60min
+original_t1dexi_experiments_60min
+glucofm_fewshot_open_144
+glucofm_fullshot_open_144
+hf_cache
+
