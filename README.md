@@ -119,6 +119,7 @@ See individual model documentation for specific commands.
 | Model | Type | Documentation | Key Features |
 |-------|------|---------------|--------------|
 | **Martinsson LSTM** | LSTM | [README.md](2019Martinsson_et_al_LSTM/README.md) | Variance estimation, NLL loss, OhioT1DM baseline |
+| **GPFormer** | Graph Transformer | [gpformer.md](GPFormer/gpformer.md) | Multi-window prediction |
 
 ### Foundation Models (LLM-based)
 
@@ -132,7 +133,6 @@ See individual model documentation for specific commands.
 | Model | Architecture | Documentation | Key Features |
 |-------|--------------|---------------|--------------|
 | **Chronos-2** | Encoder-Decoder | [chronos.md](chronos-forecasting/chronos.md) | LoRA fine-tuning, Amazon pretrained |
-| **GPFormer** | Graph Transformer | [gpformer.md](GPFormer/gpformer.md) | Multi-window prediction |
 | **Timer** | Transformer | [timer.md](timer-model/timer.md) | Efficient time series modeling |
 | **TimesFM** | Transformer | [timesfm.md](timesfm/timesfm.md) | Google pretrained |
 | **Uni2TS (Moirai)** | Unified | [moirai.md](uni2ts/moirai.md) | Universal time series model |
