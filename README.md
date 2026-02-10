@@ -286,6 +286,82 @@ If you use this benchmark in your research, please cite:
   journal={arXiv preprint arXiv:2403.07815},
   year={2024}
 }
+@misc{ansari2025chronos2,
+      title={Chronos-2: From Univariate to Universal Forecasting}, 
+      author={Abdul Fatir Ansari and Oleksandr Shchur and Jaris Küken and Andreas Auer and Boran Han and Pedro Mercado and Syama Sundar Rangapuram and Huibin Shen and Lorenzo Stella and Xiyuan Zhang and Mononito Goswami and Shubham Kapoor and Danielle C. Maddix and Pablo Guerron and Tony Hu and Junming Yin and Nick Erickson and Prateek Mutalik Desai and Hao Wang and Huzefa Rangwala and George Karypis and Yuyang Wang and Michael Bohlke-Schneider},
+      year={2025},
+      eprint={2510.15821},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2510.15821}, 
+}
+```
+
+**Timer:**
+```bibtex
+@inproceedings{liutimer,
+  title={Timer: Generative Pre-trained Transformers Are Large Time Series Models},
+  author={Liu, Yong and Zhang, Haoran and Li, Chenyu and Huang, Xiangdong and Wang, Jianmin and Long, Mingsheng},
+  booktitle={Forty-first International Conference on Machine Learning}
+}
+
+@article{liu2024timer,
+  title={Timer-XL: Long-Context Transformers for Unified Time Series Forecasting},
+  author={Liu, Yong and Qin, Guo and Huang, Xiangdong and Wang, Jianmin and Long, Mingsheng},
+  journal={arXiv preprint arXiv:2410.04803},
+  year={2024}
+}
+```
+**TimesFM:**
+```bibtex
+@misc{das2024decoderonlyfoundationmodeltimeseries,
+      title={A decoder-only foundation model for time-series forecasting}, 
+      author={Abhimanyu Das and Weihao Kong and Rajat Sen and Yichen Zhou},
+      year={2024},
+      eprint={2310.10688},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2310.10688}, 
+}
+```
+**Moirai:**
+```bibtex
+@misc{woo2024unifiedtraininguniversaltime,
+      title={Unified Training of Universal Time Series Forecasting Transformers}, 
+      author={Gerald Woo and Chenghao Liu and Akshat Kumar and Caiming Xiong and Silvio Savarese and Doyen Sahoo},
+      year={2024},
+      eprint={2402.02592},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2402.02592}, 
+}
+@misc{liu2026moirai20timeseries,
+      title={Moirai 2.0: When Less Is More for Time Series Forecasting}, 
+      author={Chenghao Liu and Taha Aksu and Juncheng Liu and Xu Liu and Hanshu Yan and Quang Pham and Silvio Savarese and Doyen Sahoo and Caiming Xiong and Junnan Li},
+      year={2026},
+      eprint={2511.11698},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2511.11698}, 
+}
+```
+
+**GPFormer**
+```bibtex
+@article{Zhu2025,
+   author = {Taiyu Zhu and Ioannis Afentakis and Kezhi Li and Ryan Armiger and Neil Hill and Nick Oliver and Pantelis Georgiou},
+   doi = {10.1109/JBHI.2024.3428921},
+   issn = {21682208},
+   issue = {8},
+   journal = {IEEE Journal of Biomedical and Health Informatics},
+   keywords = {Deep learning,Transformer,diabetes,domain generalization,glucose prediction},
+   pages = {5424-5437},
+   pmid = {39012743},
+   publisher = {Institute of Electrical and Electronics Engineers Inc.},
+   title = {Multi-Horizon Glucose Prediction Across Populations With Deep Domain Generalization},
+   volume = {29},
+   year = {2025}
+}
 ```
 
 ## 📧 Contact
