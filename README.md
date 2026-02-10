@@ -119,7 +119,7 @@ See individual model documentation for specific commands.
 | Model | Type | Documentation | Key Features |
 |-------|------|---------------|--------------|
 | **Martinsson LSTM** | LSTM | [README.md](2019Martinsson_et_al_LSTM/README.md) | Variance estimation, NLL loss, OhioT1DM baseline |
-| **GPFormer** | Graph Transformer | [gpformer.md](GPFormer/gpformer.md) | Multi-window prediction |
+| **GPFormer** | Transformer | [gpformer.md](GPFormer/gpformer.md) | Multi-window prediction |
 
 ### Foundation Models (LLM-based)
 
