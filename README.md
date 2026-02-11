@@ -159,7 +159,7 @@ See individual model documentation for specific commands.
 | **Chronos-2** | Encoder-Decoder | [chronos.md](chronos-forecasting/chronos.md) | LoRA fine-tuning, Amazon pretrained |
 | **Timer** | Transformer-Decoder | [timer.md](timer-model/timer.md) | Efficient time series modeling |
 | **TimesFM** | Transformer-Decoder | [timesfm.md](timesfm/timesfm.md) | Google pretrained |
-| **Uni2TS (Moirai)** | Transformer-Decoder | [moirai.md](uni2ts/moirai.md) | Universal time series model |
+| **Uni2TS (Moirai2.0)** | Transformer-Decoder | [moirai.md](uni2ts/moirai.md) | Universal time series model |
 
 ## 🔬 Evaluation Protocols
 
@@ -209,16 +209,6 @@ All models support multiple prediction horizons:
 
 **Note:** All models use 5-minute sampling frequency (standard for CGM devices).
 
-## 📈 Benchmark Results
-
-Results for context length = 12 hours, prediction horizon = 30 minutes are available in:
-
-```
-paper_tables_ctx12h_hor30m/
-├── zeroshot_ctx12h_hor30m_rmse.csv      # Zero-shot RMSE results
-├── fewshot_ctx12h_hor30m_rmse.csv       # Few-shot RMSE results
-└── fullshot_ctx12h_hor30m_rmse.csv      # Full-shot RMSE results
-```
 
 ## 🛠️ Common Configuration
 
