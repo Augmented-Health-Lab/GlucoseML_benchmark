@@ -69,16 +69,13 @@ GlucoseML_benchmark/
 │   ├── predict_glucose_multiwindow_timesfm_fewshot.py
 │   └── timesfm.md                 # Implementation guide
 │
-├── uni2ts/                        # Uni2TS (Moirai)
-│   ├── predict_glucose_multiwindow_uni2ts_zeroshot.py
-│   ├── predict_glucose_multiwindow_uni2ts_fullshot.py
-│   ├── predict_glucose_multiwindow_uni2ts_fewshot.py
-│   └── moirai.md                  # Implementation guide
-│
-└── paper_tables_ctx12h_hor30m/    # Benchmark results
-    ├── zeroshot_ctx12h_hor30m_rmse.csv
-    ├── fewshot_ctx12h_hor30m_rmse.csv
-    └── fullshot_ctx12h_hor30m_rmse.csv
+└── uni2ts/                        # Uni2TS (Moirai)
+    ├── predict_glucose_multiwindow_uni2ts_zeroshot.py
+    ├── predict_glucose_multiwindow_uni2ts_fullshot.py
+    ├── predict_glucose_multiwindow_uni2ts_fewshot.py
+    └── moirai.md                  # Implementation guide
+ 
+
 ```
 
 ## 🚀 Quick Start
@@ -86,7 +83,7 @@ GlucoseML_benchmark/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/GlucoseML_benchmark.git
+git clone git@github.com:Augmented-Health-Lab/GlucoseML_benchmark.git
 cd GlucoseML_benchmark
 ```
 
@@ -131,7 +128,7 @@ hf_cache/
         └── <DATASET>__<SUBJECT_ID>.csv
 ```
 
-GPFormer, Timer, TimesFM, and Uni2TS scripts default to reading from `hf_cache/`.
+GPFormer, Timer, TimesFM, Uni2TS, TimerLLM and CALF scripts default to reading from `hf_cache/`.
 
 Option 2: load directly from HuggingFace (no CSV export) by passing `--data-source hf` (requires `datasets`).
 
@@ -160,9 +157,9 @@ See individual model documentation for specific commands.
 | Model | Architecture | Documentation | Key Features |
 |-------|--------------|---------------|--------------|
 | **Chronos-2** | Encoder-Decoder | [chronos.md](chronos-forecasting/chronos.md) | LoRA fine-tuning, Amazon pretrained |
-| **Timer** | Transformer | [timer.md](timer-model/timer.md) | Efficient time series modeling |
-| **TimesFM** | Transformer | [timesfm.md](timesfm/timesfm.md) | Google pretrained |
-| **Uni2TS (Moirai)** | Unified | [moirai.md](uni2ts/moirai.md) | Universal time series model |
+| **Timer** | Transformer-Decoder | [timer.md](timer-model/timer.md) | Efficient time series modeling |
+| **TimesFM** | Transformer-Decoder | [timesfm.md](timesfm/timesfm.md) | Google pretrained |
+| **Uni2TS (Moirai)** | Transformer-Decoder | [moirai.md](uni2ts/moirai.md) | Universal time series model |
 
 ## 🔬 Evaluation Protocols
 
