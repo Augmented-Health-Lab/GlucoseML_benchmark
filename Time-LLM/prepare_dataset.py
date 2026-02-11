@@ -46,12 +46,12 @@ def export_hf_to_csv(hf_name, split, out_root):
     print(f"Exported {subject_count} subjects to: {os.path.join(out_root, split)}")
     
     # Create "all" marker for training split
-    if split == "train":
-        datasets_found = set(ds["dataset"])
-        for dataset in datasets_found:
-            marker_path = os.path.join(out_root, "train", dataset, "all")
-            Path(marker_path).touch()
-        print(f"Created 'all' markers for {len(datasets_found)} datasets")
+    # if split == "train":
+    #     datasets_found = set(ds["dataset"])
+    #     for dataset in datasets_found:
+    #         marker_path = os.path.join(out_root, "train", dataset, "all")
+    #         Path(marker_path).touch()
+    #     print(f"Created 'all' markers for {len(datasets_found)} datasets")
 
 
 def copy_hf_csvs_to_mixed(root_dir="hf_cache"):

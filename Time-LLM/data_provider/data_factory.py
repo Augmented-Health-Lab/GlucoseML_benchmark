@@ -90,7 +90,7 @@ def data_provider(args, flag):
                 max_windows_per_epoch=args.max_windows_per_epoch,
                 seed=args.seed
             )
-            shuffle_flag = False   # sampler & shuffle 不能同时用
+            shuffle_flag = False   # sampler & shuffle not the same time
 
         data_loader = DataLoader(
             data_set,
