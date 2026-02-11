@@ -1,8 +1,0 @@
-dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,finetune_pattern,train_loss_mode
-2_D1NAMO,test,few-shot,Salesforce/moirai-2.0-R-small,001,12,30,144,6,5,5min,1,final,24.34545304776494,17.604602728317033,134,10,16,240,,,1e-05,0.01,full,all
-2_D1NAMO,test,few-shot,Salesforce/moirai-2.0-R-small,002,12,30,144,6,5,5min,1,final,25.78680436207291,16.742283351837642,63,10,16,240,,,1e-05,0.01,full,all
-2_D1NAMO,test,few-shot,Salesforce/moirai-2.0-R-small,004,12,30,144,6,5,5min,1,final,38.62114239165313,24.365259806315105,45,10,16,240,,,1e-05,0.01,full,all
-2_D1NAMO,test,few-shot,Salesforce/moirai-2.0-R-small,005,12,30,144,6,5,5min,1,final,16.157224313505495,13.858551950165719,33,10,16,240,,,1e-05,0.01,full,all
-2_D1NAMO,test,few-shot,Salesforce/moirai-2.0-R-small,006,12,30,144,6,5,5min,1,final,8.105614028859888,6.629972226151796,107,10,16,240,,,1e-05,0.01,full,all
-2_D1NAMO,test,few-shot,Salesforce/moirai-2.0-R-small,007,12,30,144,6,5,5min,1,final,13.52524282253677,10.450177873883929,49,10,16,240,,,1e-05,0.01,full,all
-2_D1NAMO,test,few-shot,Salesforce/moirai-2.0-R-small,008,12,30,144,6,5,5min,1,final,11.479618559598908,9.142572975158691,80,10,16,240,,,1e-05,0.01,full,all

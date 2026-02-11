@@ -1,8 +1,0 @@
-dataset,split,shot,model_name,participant_id,context_hours,horizon_minutes,context_steps,horizon_steps,step_minutes,freq,stride_steps,metric_mode,rmse,mae,windows,train_epochs,train_batch_size,train_stride_steps,max_train_steps,max_train_windows,lr,weight_decay,train_loss_mode
-2_D1NAMO,test,few-shot,google/timesfm-2.5-200m-pytorch,001,12,30,144,6,5,5min,1,final,23.258705671242474,17.238534528817702,134,10,16,240,,,1e-05,0.01,all
-2_D1NAMO,test,few-shot,google/timesfm-2.5-200m-pytorch,002,12,30,144,6,5,5min,1,final,29.674720104123605,21.42573977273608,63,10,16,240,,,1e-05,0.01,all
-2_D1NAMO,test,few-shot,google/timesfm-2.5-200m-pytorch,004,12,30,144,6,5,5min,1,final,46.55353399290743,35.53284369574653,45,10,16,240,,,1e-05,0.01,all
-2_D1NAMO,test,few-shot,google/timesfm-2.5-200m-pytorch,005,12,30,144,6,5,5min,1,final,13.30907836394494,11.064151648319129,33,10,16,240,,,1e-05,0.01,all
-2_D1NAMO,test,few-shot,google/timesfm-2.5-200m-pytorch,006,12,30,144,6,5,5min,1,final,8.6605490409461,7.240726506598642,107,10,16,240,,,1e-05,0.01,all
-2_D1NAMO,test,few-shot,google/timesfm-2.5-200m-pytorch,007,12,30,144,6,5,5min,1,final,10.511777747642167,8.253073867486448,49,10,16,240,,,1e-05,0.01,all
-2_D1NAMO,test,few-shot,google/timesfm-2.5-200m-pytorch,008,12,30,144,6,5,5min,1,final,12.631077533929696,10.068046045303344,80,10,16,240,,,1e-05,0.01,all
