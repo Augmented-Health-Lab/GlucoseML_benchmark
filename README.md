@@ -101,12 +101,39 @@ pip install -r requirements.txt
 
 ### 3. Prepare Dataset
 
-Most models support automatic HuggingFace dataset loading. For models requiring CSV format:
+Option 1 (recommended): prepare from the HuggingFace dataset into a local CSV cache (`hf_cache/`).
 
 ```bash
-cd <model_directory>
-python prepare_dataset.py --create_mixed
+pip install datasets
+
+# Basic preparation
+python prepare_dataset.py --hf-name byluuu/gluco-tsfm-benchmark --output-dir ./hf_cache
+
+# With mixed dataset (combines all subdatasets)
+python prepare_dataset.py --hf-name byluuu/gluco-tsfm-benchmark --output-dir ./hf_cache --create-mixed
 ```
+
+This will create (when `--create-mixed` is used):
+
+```
+hf_cache/
+├── train/
+│   ├── <DATASET_NAME>/
+│   │   ├── <SUBJECT_ID>.csv
+│   │   └── all
+│   └── mixed/                 # All training data combined
+│       ├── <DATASET>__<SUBJECT_ID>.csv
+│       └── all
+└── test/
+    ├── <DATASET_NAME>/
+    │   └── <SUBJECT_ID>.csv
+    └── mixed/                 # All test data combined
+        └── <DATASET>__<SUBJECT_ID>.csv
+```
+
+GPFormer, Timer, TimesFM, and Uni2TS scripts default to reading from `hf_cache/`.
+
+Option 2: load directly from HuggingFace (no CSV export) by passing `--data-source hf` (requires `datasets`).
 
 ### 4. Run Experiments
 

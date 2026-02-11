@@ -11,17 +11,19 @@ Only 3 runnable scripts are kept under `uni2ts/`:
 From the project root (`GlucoseML_benchmark/`), the recommended directory structure is:
 
 ```
-training_dataset/
-  mixed/
-    <participant_id>.csv
-
-test_dataset/
-  <dataset_name>/
-    <participant_id>.csv
+hf_cache/
+  train/
+    mixed/
+      <dataset>__<subject_id>.csv
+  test/
+    <dataset_name>/
+      <subject_id>.csv
 ```
 
-- `training_dataset/mixed/`: training pool for full-shot / few-shot (copy/merge CSVs from each dataset under `training_dataset/` into here).
-- `test_dataset/<dataset_name>/`: per-dataset test folders (the scripts evaluate each dataset separately).
+- `hf_cache/train/mixed/`: training pool for full-shot / few-shot.
+- `hf_cache/test/<dataset_name>/`: per-dataset test folders (the scripts evaluate each dataset separately).
+
+You can also skip CSV export and load from HuggingFace directly by passing `--data-source hf` (requires `datasets`).
 
 CSV column requirements (auto-detected):
 - time column: `timestamp` / `time` / `datetime` / `date_time` / `date`
@@ -36,25 +38,25 @@ Run from the project root so the default relative paths work.
 Evaluate test only:
 
 ```
-python uni2ts/predict_glucose_multiwindow_uni2ts_zeroshot.py --splits test --data-root-test test_dataset
+python uni2ts/predict_glucose_multiwindow_uni2ts_zeroshot.py --splits test --data-root-test hf_cache/test
 ```
 
 Evaluate train + test:
 
 ```
-python uni2ts/predict_glucose_multiwindow_uni2ts_zeroshot.py --splits train test --data-root-train training_dataset --data-root-test test_dataset
+python uni2ts/predict_glucose_multiwindow_uni2ts_zeroshot.py --splits train test --data-root-train hf_cache/train --data-root-test hf_cache/test
 ```
 
 ### Full-shot (train on mixed; test on each dataset)
 
 ```
-python uni2ts/predict_glucose_multiwindow_uni2ts_fullshot.py --data-root-train training_dataset/mixed --data-root-test test_dataset
+python uni2ts/predict_glucose_multiwindow_uni2ts_fullshot.py --data-root-train hf_cache/train/mixed --data-root-test hf_cache/test
 ```
 
 ### Few-shot
 
 ```
-python uni2ts/predict_glucose_multiwindow_uni2ts_fewshot.py --data-root-train training_dataset/mixed --data-root-test test_dataset
+python uni2ts/predict_glucose_multiwindow_uni2ts_fewshot.py --data-root-train hf_cache/train/mixed --data-root-test hf_cache/test
 ```
 
 ### Defaults (Full-shot / Few-shot)
@@ -71,7 +73,7 @@ Few-shot defaults:
 
 ### Common Optional Args
 
-- `--datasets <name1> <name2> ...`: run only selected datasets (folder names under `test_dataset/`)
+- `--datasets <name1> <name2> ...`: run only selected datasets (dataset names from the HF split, or folder names under `hf_cache/test/` in CSV mode)
 - `--context-hours ...` / `--horizons-minutes ...`: select context windows / prediction horizons
 - `--eval-stride-steps N`: evaluation sliding-window stride (`0` means `context_steps`; `1` means 5 minutes)
 - full-shot/few-shot training: `--train-epochs` / `--train-batch-size` / `--train-stride-steps` / `--max-train-windows` / `--max-train-steps`

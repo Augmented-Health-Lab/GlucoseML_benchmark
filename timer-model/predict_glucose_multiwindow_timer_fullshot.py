@@ -4,6 +4,7 @@ import argparse
 import logging
 import math
 import random
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -15,12 +16,23 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoModelForCausalLM
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from results_cache import load_completed_keys, upsert_csv_rows  # noqa: E402
+from glucofm_data import (  # noqa: E402
+    DEFAULT_HF_NAME,
+    iter_glucofm_subjects_from_hf,
+    parse_timestamp_series,
+)
+
 
 MODEL_NAME = str(Path(__file__).resolve().parent)
 DATA_SPLITS = {
     # Train on the mixed training pool by default.
-    "train": Path(__file__).resolve().parent.parent / "training_dataset" / "mixed",
-    "test": Path(__file__).resolve().parent.parent / "test_dataset",
+    "train": Path(__file__).resolve().parent.parent / "hf_cache" / "train" / "mixed",
+    "test": Path(__file__).resolve().parent.parent / "hf_cache" / "test",
 }
 
 DEFAULT_RESULTS_ROOT = Path(__file__).resolve().parent / "multi_horizon_results_timer_fullshot"
@@ -64,7 +76,7 @@ def load_subject_dataframe(csv_path: Path) -> pd.DataFrame:
             raise ValueError(f"Value column not found in {csv_path}")
         value_col = df.columns[1]
 
-    df[timestamp_col] = pd.to_datetime(df[timestamp_col], errors="coerce")
+    df[timestamp_col] = parse_timestamp_series(df[timestamp_col])
     df[value_col] = pd.to_numeric(df[value_col], errors="coerce")
     df = df.dropna(subset=[timestamp_col, value_col])
     df = df[[timestamp_col, value_col]].rename(columns={timestamp_col: "timestamp", value_col: "value"})
@@ -102,6 +114,24 @@ def ensure_results_root(results_root: Path) -> None:
     results_root.mkdir(parents=True, exist_ok=True)
 
 
+def save_model_dir(results_root: Path, *, shot_label: str, cfg: ForecastConfig) -> Path:
+    return results_root / "saved_models" / f"{shot_label}_ctx{cfg.context_hours}h_hor{cfg.horizon_minutes}m"
+
+
+def save_trained_model(
+    model: AutoModelForCausalLM,
+    *,
+    results_root: Path,
+    shot_label: str,
+    cfg: ForecastConfig,
+) -> Path:
+    out_dir = save_model_dir(results_root, shot_label=shot_label, cfg=cfg)
+    out_dir.parent.mkdir(parents=True, exist_ok=True)
+    # HF-style model; includes config + weights.
+    model.save_pretrained(out_dir)
+    return out_dir
+
+
 def setup_logging(results_root: Path, log_stem: str) -> Path:
     ensure_results_root(results_root)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -127,7 +157,7 @@ def horizon_steps_from_minutes(minutes: int) -> int:
 
 
 def normalize_timestamps(timestamps: pd.Series) -> np.ndarray:
-    ts = pd.to_datetime(timestamps, errors="coerce", utc=True).dt.tz_convert(None)
+    ts = parse_timestamp_series(timestamps)
     arr = ts.to_numpy(dtype="datetime64[ns]")
     if np.isnat(arr).any():
         raise ValueError("Timestamps contain NaT values after normalization.")
@@ -490,14 +520,31 @@ def parse_args(
         "--data-root-train",
         type=Path,
         default=DATA_SPLITS["train"],
-        help="Directory containing training CSV files (default: training_dataset/mixed).",
+        help="Directory containing training CSV files (default: hf_cache/train/mixed).",
     )
     parser.add_argument(
         "--data-root-test",
         type=Path,
         default=DATA_SPLITS["test"],
-        help="Root directory containing dataset subfolders for the test split.",
+        help="Root directory containing dataset subfolders for the test split (default: hf_cache/test).",
     )
+    parser.add_argument(
+        "--data-source",
+        choices=["csv", "hf"],
+        default="csv",
+        help=(
+            "Data source: 'csv' reads per-subject CSVs from --data-root-*, "
+            "'hf' loads GlucoFM directly from HuggingFace (requires `datasets`)."
+        ),
+    )
+    parser.add_argument(
+        "--hf-name",
+        type=str,
+        default=DEFAULT_HF_NAME,
+        help=f"HuggingFace dataset repo (default: {DEFAULT_HF_NAME}).",
+    )
+    parser.add_argument("--hf-train-split", type=str, default="train")
+    parser.add_argument("--hf-test-split", type=str, default="test")
     parser.add_argument("--datasets", nargs="*", default=None, help="Optional dataset folder names to include.")
     parser.add_argument("--context-hours", type=int, nargs="*", default=[12], help="Context window hours (default: 12).")
     parser.add_argument(
@@ -518,6 +565,19 @@ def parse_args(
     )
     parser.add_argument("--eval-batch-size", type=int, default=DEFAULT_EVAL_BATCH_SIZE, help="Inference batch size.")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing metrics CSVs.")
+    parser.add_argument(
+        "--save-trained-model",
+        dest="save_trained_model",
+        action="store_true",
+        default=True,
+        help="Save a fine-tuned model per (context,horizon) under results_root/saved_models/ (default: enabled).",
+    )
+    parser.add_argument(
+        "--no-save-trained-model",
+        dest="save_trained_model",
+        action="store_false",
+        help="Disable saving fine-tuned models.",
+    )
 
     parser.add_argument("--train-batch-size", type=int, default=DEFAULT_TRAIN_BATCH_SIZE)
     parser.add_argument("--train-epochs", type=int, default=default_train_epochs)
@@ -576,13 +636,6 @@ def main(
     device = resolve_device(args.device)
     LOGGER.info("Device: %s", device)
 
-    train_root: Path = args.data_root_train
-    test_root: Path = args.data_root_test
-    if not train_root.exists():
-        raise FileNotFoundError(f"Train root not found: {train_root}")
-    if not test_root.exists():
-        raise FileNotFoundError(f"Test root not found: {test_root}")
-
     context_hours = args.context_hours
     horizons_minutes = args.horizons_minutes
     configs = [
@@ -601,75 +654,190 @@ def main(
     patch_len = int(getattr(base_model.config, "input_token_len", 0))
     del base_model
     LOGGER.info("Timer input_token_len=%d", patch_len)
-
-    train_groups = collect_subject_groups(train_root)
-    if not train_groups:
-        raise FileNotFoundError(f"No training CSV files found under {train_root}")
-
-    LOGGER.info("Training pool: %s (%d participants)", train_root, len(train_groups))
     train_series: Dict[str, SeriesCache] = {}
-    for participant_id, csv_paths in train_groups.items():
-        try:
-            df = load_subject(csv_paths)
-            train_series[participant_id] = load_series_cache(df)
-        except Exception as exc:
-            LOGGER.warning("train/%s: skipped (%s)", participant_id, exc)
+    if args.data_source == "hf":
+        LOGGER.info("Training pool: HF %s split=%s", args.hf_name, args.hf_train_split)
+        for dataset_name, subject_id, df in iter_glucofm_subjects_from_hf(
+            args.hf_name,
+            args.hf_train_split,
+        ):
+            participant_id = f"{dataset_name}__{subject_id}"
+            try:
+                train_series[participant_id] = load_series_cache(df)
+            except Exception as exc:
+                LOGGER.warning("train/%s: skipped (%s)", participant_id, exc)
+    else:
+        train_root: Path = args.data_root_train
+        if not train_root.exists():
+            raise FileNotFoundError(
+                f"Train root not found: {train_root}\n"
+                "Tip: prepare the dataset with:\n"
+                "  python prepare_dataset.py --create-mixed\n"
+            )
+
+        train_groups = collect_subject_groups(train_root)
+        if not train_groups:
+            raise FileNotFoundError(f"No training CSV files found under {train_root}")
+
+        LOGGER.info("Training pool: %s (%d participants)", train_root, len(train_groups))
+        for participant_id, csv_paths in train_groups.items():
+            try:
+                df = load_subject(csv_paths)
+                train_series[participant_id] = load_series_cache(df)
+            except Exception as exc:
+                LOGGER.warning("train/%s: skipped (%s)", participant_id, exc)
 
     if not train_series:
-        raise ValueError(f"No valid training series loaded from {train_root}")
-
-    dataset_dirs = sorted(p for p in test_root.iterdir() if p.is_dir())
-    if args.datasets is not None:
-        allowed = set(args.datasets)
-        dataset_dirs = [p for p in dataset_dirs if p.name in allowed]
-    if not dataset_dirs:
-        raise FileNotFoundError(f"No dataset folders found in {test_root}")
+        raise ValueError("No valid training series loaded.")
 
     dataset_state: Dict[str, Dict[str, object]] = {}
-    for dataset_dir in dataset_dirs:
-        dataset_name = dataset_dir.name
-        output_path = results_root / f"{dataset_name}_test_metrics.csv"
+    if args.data_source == "hf":
+        allowed = set(args.datasets) if args.datasets is not None else None
+        test_subjects: Dict[str, Dict[str, pd.DataFrame]] = {}
+        for dataset_name, subject_id, df in iter_glucofm_subjects_from_hf(
+            args.hf_name,
+            args.hf_test_split,
+            datasets=allowed,
+        ):
+            test_subjects.setdefault(dataset_name, {})[subject_id] = df
+        if not test_subjects:
+            raise FileNotFoundError(
+                f"No HF test subjects found (hf_name={args.hf_name!r}, split={args.hf_test_split!r})."
+            )
+        dataset_pairs = sorted(test_subjects.items(), key=lambda kv: kv[0])
+    else:
+        test_root: Path = args.data_root_test
+        if not test_root.exists():
+            raise FileNotFoundError(
+                f"Test root not found: {test_root}\n"
+                "Tip: prepare the dataset with:\n"
+                "  python prepare_dataset.py --create-mixed\n"
+            )
+        dataset_dirs = sorted(p for p in test_root.iterdir() if p.is_dir())
+        if args.datasets is not None:
+            allowed = set(args.datasets)
+            dataset_dirs = [p for p in dataset_dirs if p.name in allowed]
+        if not dataset_dirs:
+            raise FileNotFoundError(f"No dataset folders found in {test_root}")
+        dataset_pairs = [(p.name, p) for p in dataset_dirs]
 
-        existing_df = pd.DataFrame()
-        completed_keys: Set[Tuple[str, int, int]] = set()
-        if not args.overwrite:
-            existing_df = load_existing_metrics(output_path)
-            required_cols = {"participant_id", "context_hours", "horizon_minutes"}
-            if not existing_df.empty and required_cols.issubset(existing_df.columns):
-                completed_keys = set(
-                    (str(r["participant_id"]), int(r["context_hours"]), int(r["horizon_minutes"]))
-                    for _, r in existing_df.iterrows()
-                )
-            elif not existing_df.empty:
-                LOGGER.warning("%s: existing metrics missing key columns, ignoring cached content.", dataset_name)
-                existing_df = pd.DataFrame()
+    cache_key_cols = ("participant_id", "context_hours", "horizon_minutes", "stride_steps", "metric_mode")
+    desired_order = [
+        "dataset",
+        "split",
+        "shot",
+        "model_name",
+        "participant_id",
+        "context_hours",
+        "horizon_minutes",
+        "context_steps",
+        "model_context_steps",
+        "horizon_steps",
+        "step_minutes",
+        "freq",
+        "stride_steps",
+        "metric_mode",
+        "rmse",
+        "mae",
+        "windows",
+        "train_epochs",
+        "train_batch_size",
+        "train_stride_steps",
+        "max_train_steps",
+        "max_train_windows",
+        "lr",
+        "weight_decay",
+        "train_loss_mode",
+    ]
+    if args.data_source == "hf":
+        for dataset_name, subjects in dataset_pairs:
+            output_path = results_root / f"{dataset_name}_test_metrics.csv"
 
-        test_groups = collect_subject_groups(dataset_dir)
-        if not test_groups:
-            LOGGER.warning("%s: empty test participants, skipping", dataset_name)
-            continue
+            completed_keys: Set[Tuple[object, ...]] = set()
+            if args.overwrite:
+                if output_path.exists():
+                    try:
+                        output_path.unlink()
+                    except Exception as exc:
+                        LOGGER.warning("Failed to remove existing metrics %s (%s)", output_path, exc)
+            else:
+                completed_keys = load_completed_keys(output_path, key_cols=cache_key_cols)
+                if completed_keys:
+                    LOGGER.info(
+                        "%s: found %d existing rows, skipping unless --overwrite is set.",
+                        dataset_name,
+                        len(completed_keys),
+                    )
 
-        LOGGER.info("%s: test_participants=%d", dataset_name, len(test_groups))
-        dataset_state[dataset_name] = {
-            "output_path": output_path,
-            "existing_df": existing_df,
-            "completed_keys": completed_keys,
-            "test_groups": test_groups,
-            "records": [],
-        }
+            participant_ids = list(subjects.keys())
+            if not participant_ids:
+                LOGGER.warning("%s: empty HF test participants, skipping", dataset_name)
+                continue
+
+            LOGGER.info("%s: test_participants=%d (HF)", dataset_name, len(participant_ids))
+            dataset_state[dataset_name] = {
+                "output_path": output_path,
+                "completed_keys": completed_keys,
+                "participant_ids": participant_ids,
+                "test_subjects": subjects,
+                "records": [],
+            }
+    else:
+        for dataset_name, dataset_dir in dataset_pairs:
+            output_path = results_root / f"{dataset_name}_test_metrics.csv"
+
+            completed_keys: Set[Tuple[object, ...]] = set()
+            if args.overwrite:
+                # Clear once so incremental writes produce a fresh file for this run.
+                if output_path.exists():
+                    try:
+                        output_path.unlink()
+                    except Exception as exc:
+                        LOGGER.warning("Failed to remove existing metrics %s (%s)", output_path, exc)
+            else:
+                completed_keys = load_completed_keys(output_path, key_cols=cache_key_cols)
+                if completed_keys:
+                    LOGGER.info(
+                        "%s: found %d existing rows, skipping unless --overwrite is set.",
+                        dataset_name,
+                        len(completed_keys),
+                    )
+
+            test_groups = collect_subject_groups(dataset_dir)
+            if not test_groups:
+                LOGGER.warning("%s: empty test participants, skipping", dataset_name)
+                continue
+
+            participant_ids = list(test_groups.keys())
+            LOGGER.info("%s: test_participants=%d", dataset_name, len(participant_ids))
+            dataset_state[dataset_name] = {
+                "output_path": output_path,
+                "completed_keys": completed_keys,
+                "participant_ids": participant_ids,
+                "test_groups": test_groups,
+                "records": [],
+            }
 
     if not dataset_state:
-        raise FileNotFoundError(f"No usable test datasets found in {test_root}")
+        raise FileNotFoundError("No usable test datasets found.")
 
     for cfg in configs:
         missing_any = args.overwrite
         if not missing_any:
+            stride_steps = cfg.context_steps if args.eval_stride_steps <= 0 else args.eval_stride_steps
             for info in dataset_state.values():
                 completed = info["completed_keys"]
-                test_groups = info["test_groups"]
+                participant_ids = info["participant_ids"]
                 if any(
-                    (participant_id, cfg.context_hours, cfg.horizon_minutes) not in completed
-                    for participant_id in test_groups.keys()
+                    (
+                        participant_id,
+                        cfg.context_hours,
+                        cfg.horizon_minutes,
+                        int(stride_steps),
+                        str(args.metric_mode),
+                    )
+                    not in completed
+                    for participant_id in participant_ids
                 ):
                     missing_any = True
                     break
@@ -699,18 +867,49 @@ def main(
             LOGGER.warning("Finetune failed ctx=%dh hor=%dm (%s)", cfg.context_hours, cfg.horizon_minutes, exc)
             continue
 
+        if args.save_trained_model:
+            try:
+                saved_path = save_trained_model(
+                    finetuned_model,
+                    results_root=results_root,
+                    shot_label=shot_label,
+                    cfg=cfg,
+                )
+                LOGGER.info("Saved trained model to %s", saved_path)
+            except Exception as exc:
+                LOGGER.warning(
+                    "Failed to save trained model ctx=%dh hor=%dm (%s)",
+                    cfg.context_hours,
+                    cfg.horizon_minutes,
+                    exc,
+                )
+
         stride_steps = cfg.context_steps if args.eval_stride_steps <= 0 else args.eval_stride_steps
         for dataset_name, info in dataset_state.items():
             completed = info["completed_keys"]
-            test_groups = info["test_groups"]
+            if args.data_source == "hf":
+                test_subjects = info["test_subjects"]
+                subject_iter = test_subjects.items()
+            else:
+                test_groups = info["test_groups"]
+                subject_iter = test_groups.items()
             records = info["records"]
 
-            for participant_id, csv_paths in test_groups.items():
-                key = (participant_id, cfg.context_hours, cfg.horizon_minutes)
+            for participant_id, subject_payload in subject_iter:
+                key = (
+                    participant_id,
+                    cfg.context_hours,
+                    cfg.horizon_minutes,
+                    int(stride_steps),
+                    str(args.metric_mode),
+                )
                 if key in completed:
                     continue
                 try:
-                    df = load_subject(csv_paths)
+                    if args.data_source == "hf":
+                        df = subject_payload
+                    else:
+                        df = load_subject(subject_payload)
                 except Exception as exc:
                     LOGGER.warning("%s/test/%s: skipped (%s)", dataset_name, participant_id, exc)
                     continue
@@ -761,65 +960,41 @@ def main(
                     }
                 )
 
+        # Flush results to disk after each (context,horizon) so partial progress isn't lost.
+        for dataset_name, info in dataset_state.items():
+            output_path: Path = info["output_path"]
+            records: List[Dict[str, object]] = info["records"]
+            if not records:
+                continue
+
+            new_df = pd.DataFrame(records)
+            written = upsert_csv_rows(
+                output_path,
+                new_df,
+                key_cols=cache_key_cols,
+                desired_order=desired_order,
+                sort_by=["participant_id", "context_hours", "horizon_minutes"],
+            )
+            LOGGER.info("Saved metrics to %s (+%d rows)", output_path, written)
+
+            completed = info["completed_keys"]
+            for row in new_df.itertuples(index=False):
+                completed.add(
+                    (
+                        str(getattr(row, "participant_id")),
+                        int(getattr(row, "context_hours")),
+                        int(getattr(row, "horizon_minutes")),
+                        int(getattr(row, "stride_steps")),
+                        str(getattr(row, "metric_mode")),
+                    )
+                )
+
+            records.clear()
+
         # Free memory between configs.
         del finetuned_model
         if device.type == "cuda":
             torch.cuda.empty_cache()
-
-    for dataset_name, info in dataset_state.items():
-        output_path: Path = info["output_path"]
-        existing_df: pd.DataFrame = info["existing_df"]
-        records: List[Dict[str, object]] = info["records"]
-
-        new_df = pd.DataFrame(records)
-        if args.overwrite or existing_df.empty:
-            final_df = new_df
-        else:
-            final_df = pd.concat([existing_df, new_df], ignore_index=True)
-            final_df = final_df.drop_duplicates(
-                subset=["participant_id", "context_hours", "horizon_minutes"],
-                keep="last",
-            ).reset_index(drop=True)
-
-        if final_df.empty:
-            LOGGER.warning("%s: no metrics to write.", dataset_name)
-            continue
-
-        desired_order = [
-            "dataset",
-            "split",
-            "shot",
-            "model_name",
-            "participant_id",
-            "context_hours",
-            "horizon_minutes",
-            "context_steps",
-            "model_context_steps",
-            "horizon_steps",
-            "step_minutes",
-            "freq",
-            "stride_steps",
-            "metric_mode",
-            "rmse",
-            "mae",
-            "windows",
-            "train_epochs",
-            "train_batch_size",
-            "train_stride_steps",
-            "max_train_steps",
-            "max_train_windows",
-            "lr",
-            "weight_decay",
-            "train_loss_mode",
-        ]
-        ordered_cols = [col for col in desired_order if col in final_df.columns]
-        remaining_cols = [col for col in final_df.columns if col not in ordered_cols]
-        final_df = final_df[ordered_cols + remaining_cols]
-        final_df = final_df.sort_values(["participant_id", "context_hours", "horizon_minutes"]).reset_index(drop=True)
-
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        final_df.to_csv(output_path, index=False)
-        LOGGER.info("Saved metrics to %s (%d rows)", output_path, len(final_df))
 
 
 if __name__ == "__main__":

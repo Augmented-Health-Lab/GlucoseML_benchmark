@@ -1,6 +1,7 @@
 import argparse
 import logging
 import math
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -11,11 +12,22 @@ import pandas as pd
 import torch
 from transformers import AutoModelForCausalLM
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from results_cache import load_completed_keys, upsert_csv_rows  # noqa: E402
+from glucofm_data import (  # noqa: E402
+    DEFAULT_HF_NAME,
+    iter_glucofm_subjects_from_hf,
+    parse_timestamp_series,
+)
+
 
 MODEL_NAME = str(Path(__file__).resolve().parent)
 DATA_SPLITS = {
-    "train": Path(__file__).resolve().parent.parent / "training_dataset",
-    "test": Path(__file__).resolve().parent.parent / "test_dataset",
+    "train": Path(__file__).resolve().parent.parent / "hf_cache" / "train",
+    "test": Path(__file__).resolve().parent.parent / "hf_cache" / "test",
 }
 
 RESULTS_ROOT = Path(__file__).resolve().parent / "multi_horizon_results_timer_zeroshot"
@@ -55,7 +67,7 @@ def load_subject_dataframe(csv_path: Path) -> pd.DataFrame:
             raise ValueError(f"Value column not found in {csv_path}")
         value_col = df.columns[1]
 
-    df[timestamp_col] = pd.to_datetime(df[timestamp_col], errors="coerce")
+    df[timestamp_col] = parse_timestamp_series(df[timestamp_col])
     df[value_col] = pd.to_numeric(df[value_col], errors="coerce")
     df = df.dropna(subset=[timestamp_col, value_col])
     df = df[[timestamp_col, value_col]].rename(columns={timestamp_col: "timestamp", value_col: "value"})
@@ -118,7 +130,7 @@ def horizon_steps_from_minutes(minutes: int) -> int:
 
 
 def normalize_timestamps(timestamps: pd.Series) -> np.ndarray:
-    ts = pd.to_datetime(timestamps, errors="coerce", utc=True).dt.tz_convert(None)
+    ts = parse_timestamp_series(timestamps)
     arr = ts.to_numpy(dtype="datetime64[ns]")
     if np.isnat(arr).any():
         raise ValueError("Timestamps contain NaT values after normalization.")
@@ -329,14 +341,31 @@ def parse_args() -> argparse.Namespace:
         "--data-root-train",
         type=Path,
         default=DATA_SPLITS["train"],
-        help="Root directory containing dataset subfolders for the train split.",
+        help="Root directory containing dataset subfolders for the train split (default: hf_cache/train).",
     )
     parser.add_argument(
         "--data-root-test",
         type=Path,
         default=DATA_SPLITS["test"],
-        help="Root directory containing dataset subfolders for the test split.",
+        help="Root directory containing dataset subfolders for the test split (default: hf_cache/test).",
     )
+    parser.add_argument(
+        "--data-source",
+        choices=["csv", "hf"],
+        default="csv",
+        help=(
+            "Data source: 'csv' reads per-subject CSVs from --data-root-*, "
+            "'hf' loads GlucoFM directly from HuggingFace (requires `datasets`)."
+        ),
+    )
+    parser.add_argument(
+        "--hf-name",
+        type=str,
+        default=DEFAULT_HF_NAME,
+        help=f"HuggingFace dataset repo (default: {DEFAULT_HF_NAME}).",
+    )
+    parser.add_argument("--hf-train-split", type=str, default="train")
+    parser.add_argument("--hf-test-split", type=str, default="test")
     parser.add_argument(
         "--datasets",
         nargs="*",
@@ -380,10 +409,7 @@ def main() -> None:
     LOGGER.info("Logging to %s", log_path)
     ensure_results_root()
 
-    split_roots = {
-        "train": args.data_root_train,
-        "test": args.data_root_test,
-    }
+    split_roots = {"train": args.data_root_train, "test": args.data_root_test}
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     LOGGER.info("Loading Timer model '%s' (%s)", args.model_name, device)
@@ -404,70 +430,90 @@ def main() -> None:
                 )
             )
 
+    allowed = set(args.datasets) if args.datasets is not None else None
+
     for split_name in args.splits:
-        data_root = split_roots[split_name]
-        if not data_root.exists():
-            LOGGER.warning("Split '%s' not found at %s (skipping)", split_name, data_root)
-            continue
+        output_suffix = "metrics" if args.task == "eval" else "latest_predictions"
 
-        dataset_dirs = sorted(p for p in data_root.iterdir() if p.is_dir())
-        if args.datasets is not None:
-            allowed = set(args.datasets)
-            dataset_dirs = [p for p in dataset_dirs if p.name in allowed]
-        if not dataset_dirs:
-            LOGGER.warning("No dataset folders found in %s for split '%s'", data_root, split_name)
-            continue
+        if args.data_source == "hf":
+            hf_split = args.hf_train_split if split_name == "train" else args.hf_test_split
+            subjects_by_dataset: Dict[str, Dict[str, pd.DataFrame]] = {}
+            for dataset_name, subject_id, df in iter_glucofm_subjects_from_hf(
+                args.hf_name,
+                hf_split,
+                datasets=allowed,
+            ):
+                subjects_by_dataset.setdefault(dataset_name, {})[subject_id] = df
 
-        for dataset_dir in dataset_dirs:
-            output_suffix = "metrics" if args.task == "eval" else "latest_predictions"
-            output_path = RESULTS_ROOT / f"{dataset_dir.name}_{split_name}_{output_suffix}.csv"
-            existing_df = pd.DataFrame()
-            completed_keys: Set[Tuple[str, int, int]] = set()
+            if not subjects_by_dataset:
+                LOGGER.warning("No HF datasets found for split '%s' (skipping).", split_name)
+                continue
+
+            dataset_items = sorted(subjects_by_dataset.items(), key=lambda kv: kv[0])
+            dataset_iter = ((name, subjects_by_dataset[name]) for name, _ in dataset_items)
+        else:
+            data_root = split_roots[split_name]
+            if not data_root.exists():
+                LOGGER.warning("Split '%s' not found at %s (skipping)", split_name, data_root)
+                continue
+
+            dataset_dirs = sorted(p for p in data_root.iterdir() if p.is_dir())
+            if allowed is not None:
+                dataset_dirs = [p for p in dataset_dirs if p.name in allowed]
+            if not dataset_dirs:
+                LOGGER.warning("No dataset folders found in %s for split '%s'", data_root, split_name)
+                continue
+
+            dataset_iter = ((p.name, p) for p in dataset_dirs)
+
+        for dataset_name, dataset_payload in dataset_iter:
+            output_path = RESULTS_ROOT / f"{dataset_name}_{split_name}_{output_suffix}.csv"
+            cache_key_cols = (
+                ("participant_id", "context_hours", "horizon_minutes", "stride_steps", "metric_mode")
+                if args.task == "eval"
+                else ("participant_id", "context_hours", "horizon_minutes", "latest_requires_truth")
+            )
+            completed_keys: Set[Tuple[object, ...]] = set()
             if not args.overwrite:
-                existing_df = load_existing_metrics(output_path)
-                required_cols = {"participant_id", "context_hours", "horizon_minutes"}
-                if not existing_df.empty and required_cols.issubset(existing_df.columns):
-                    completed_keys = set(
-                        (
-                            str(row["participant_id"]),
-                            int(row["context_hours"]),
-                            int(row["horizon_minutes"]),
-                        )
-                        for _, row in existing_df.iterrows()
-                    )
+                completed_keys = load_completed_keys(output_path, key_cols=cache_key_cols)
+                if completed_keys:
                     LOGGER.info(
                         "%s (%s split): found %d existing rows, skipping unless --overwrite is set.",
-                        dataset_dir.name,
+                        dataset_name,
                         split_name,
                         len(completed_keys),
                     )
-                elif not existing_df.empty:
-                    LOGGER.warning(
-                        "%s (%s split): existing results missing key columns, ignoring cached content.",
-                        dataset_dir.name,
-                        split_name,
-                    )
-                    existing_df = pd.DataFrame()
 
-            subject_groups = collect_subject_groups(dataset_dir)
             records: List[Dict[str, object]] = []
+            if args.data_source == "hf":
+                subject_groups = dataset_payload
+            else:
+                subject_groups = collect_subject_groups(dataset_payload)
 
-            LOGGER.info("%s (%s split): %d participants", dataset_dir.name, split_name, len(subject_groups))
-            for participant_id, csv_paths in subject_groups.items():
-                try:
-                    df = load_subject(csv_paths)
-                except (ValueError, pd.errors.EmptyDataError) as exc:
-                    LOGGER.warning("%s / %s: skipped (%s)", dataset_dir.name, participant_id, exc)
-                    continue
-
-                for cfg in configs:
-                    key = (participant_id, cfg.context_hours, cfg.horizon_minutes)
-                    if key in completed_keys:
+            LOGGER.info("%s (%s split): %d participants", dataset_name, split_name, len(subject_groups))
+            for participant_id, subject_payload in subject_groups.items():
+                if args.data_source == "hf":
+                    df = subject_payload
+                else:
+                    try:
+                        df = load_subject(subject_payload)
+                    except (ValueError, pd.errors.EmptyDataError) as exc:
+                        LOGGER.warning("%s / %s: skipped (%s)", dataset_name, participant_id, exc)
                         continue
 
+                for cfg in configs:
                     model_context_steps = _effective_context_steps(cfg.context_steps, patch_len)
 
                     if args.task == "latest":
+                        key = (
+                            participant_id,
+                            cfg.context_hours,
+                            cfg.horizon_minutes,
+                            bool(args.latest_requires_truth),
+                        )
+                        if key in completed_keys:
+                            continue
+
                         required_future = cfg.horizon_steps if args.latest_requires_truth else 0
                         try:
                             timestamps = normalize_timestamps(df["timestamp"])
@@ -507,7 +553,7 @@ def main() -> None:
 
                         records.append(
                             {
-                                "dataset": dataset_dir.name,
+                                "dataset": dataset_name,
                                 "split": split_name,
                                 "participant_id": participant_id,
                                 "context_hours": cfg.context_hours,
@@ -524,56 +570,63 @@ def main() -> None:
                                 "latest_requires_truth": bool(args.latest_requires_truth),
                             }
                         )
+                        continue
                     else:
                         stride_steps = cfg.context_steps if args.stride_steps <= 0 else args.stride_steps
-                        sse, sae, points, windows, model_context_steps = evaluate_subject(
-                            model,
-                            participant_id,
-                            df,
-                            cfg,
-                            stride_steps=stride_steps,
-                            batch_size=args.batch_size,
-                            metric_mode=args.metric_mode,
-                            patch_len=patch_len,
-                            device=device,
-                        )
-                        if points == 0 or windows == 0:
-                            continue
 
-                        rmse = math.sqrt(sse / points)
-                        mae = sae / points
-                        records.append(
-                            {
-                                "dataset": dataset_dir.name,
-                                "split": split_name,
-                                "participant_id": participant_id,
-                                "context_hours": cfg.context_hours,
-                                "horizon_minutes": cfg.horizon_minutes,
-                                "context_steps": cfg.context_steps,
-                                "model_context_steps": model_context_steps,
-                                "horizon_steps": cfg.horizon_steps,
-                                "step_minutes": STEP_MINUTES,
-                                "freq": FREQ,
-                                "stride_steps": stride_steps,
-                                "metric_mode": args.metric_mode,
-                                "rmse": rmse,
-                                "mae": mae,
-                                "windows": windows,
-                                "task": "eval",
-                            }
-                        )
+                    key = (
+                        participant_id,
+                        cfg.context_hours,
+                        cfg.horizon_minutes,
+                        int(stride_steps),
+                        str(args.metric_mode),
+                    )
+                    if key in completed_keys:
+                        continue
+
+                    sse, sae, points, windows, model_context_steps = evaluate_subject(
+                        model,
+                        participant_id,
+                        df,
+                        cfg,
+                        stride_steps=stride_steps,
+                        batch_size=args.batch_size,
+                        metric_mode=args.metric_mode,
+                        patch_len=patch_len,
+                        device=device,
+                    )
+                    if points == 0 or windows == 0:
+                        continue
+
+                    rmse = math.sqrt(sse / points)
+                    mae = sae / points
+                    records.append(
+                        {
+                            "dataset": dataset_name,
+                            "split": split_name,
+                            "participant_id": participant_id,
+                            "context_hours": cfg.context_hours,
+                            "horizon_minutes": cfg.horizon_minutes,
+                            "context_steps": cfg.context_steps,
+                            "model_context_steps": model_context_steps,
+                            "horizon_steps": cfg.horizon_steps,
+                            "step_minutes": STEP_MINUTES,
+                            "freq": FREQ,
+                            "stride_steps": stride_steps,
+                            "metric_mode": args.metric_mode,
+                            "rmse": rmse,
+                            "mae": mae,
+                            "windows": windows,
+                            "task": "eval",
+                        }
+                    )
 
             new_df = pd.DataFrame(records)
-            if args.overwrite or existing_df.empty:
-                final_df = new_df
-            else:
-                final_df = pd.concat([existing_df, new_df], ignore_index=True)
-                final_df = final_df.drop_duplicates(
-                    subset=["participant_id", "context_hours", "horizon_minutes"], keep="last"
-                ).reset_index(drop=True)
-
-            if final_df.empty:
-                LOGGER.warning("%s (%s split): no metrics to write.", dataset_dir.name, split_name)
+            if new_df.empty:
+                if output_path.exists():
+                    LOGGER.info("%s (%s split): no new rows to write.", dataset_name, split_name)
+                else:
+                    LOGGER.warning("%s (%s split): no metrics to write.", dataset_name, split_name)
                 continue
 
             desired_order = [
@@ -598,12 +651,26 @@ def main() -> None:
                 "mae",
                 "windows",
             ]
-            ordered_cols = [col for col in desired_order if col in final_df.columns]
-            remaining_cols = [col for col in final_df.columns if col not in ordered_cols]
-            final_df = final_df[ordered_cols + remaining_cols]
-            final_df = final_df.sort_values(["participant_id", "context_hours", "horizon_minutes"]).reset_index(drop=True)
-            final_df.to_csv(output_path, index=False)
-            LOGGER.info("Saved metrics to %s (%d rows)", output_path, len(final_df))
+            if args.overwrite:
+                final_df = new_df
+                ordered_cols = [col for col in desired_order if col in final_df.columns]
+                remaining_cols = [col for col in final_df.columns if col not in ordered_cols]
+                final_df = final_df[ordered_cols + remaining_cols]
+                final_df = final_df.sort_values(
+                    ["participant_id", "context_hours", "horizon_minutes"]
+                ).reset_index(drop=True)
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                final_df.to_csv(output_path, index=False)
+                LOGGER.info("Saved metrics to %s (%d rows)", output_path, len(final_df))
+            else:
+                written = upsert_csv_rows(
+                    output_path,
+                    new_df,
+                    key_cols=cache_key_cols,
+                    desired_order=desired_order,
+                    sort_by=["participant_id", "context_hours", "horizon_minutes"],
+                )
+                LOGGER.info("Saved metrics to %s (+%d rows)", output_path, written)
 
 
 if __name__ == "__main__":

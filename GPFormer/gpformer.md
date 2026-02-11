@@ -10,22 +10,20 @@ Runnable scripts under `GPFormer/`:
 From the project root (`GlucoseML_benchmark/`), the recommended directory structure is:
 
 ```
-training_dataset/
-  mixed/
-    <participant_id>.csv
+hf_cache/
+  train/
+    mixed/
+      <dataset>__<subject_id>.csv
 
-test_dataset/
-  <dataset_name>/
-    <participant_id>.csv
-
-  controlled_dataset/
+  test/
     <dataset_name>/
-      <participant_id>.csv
+      <subject_id>.csv
 ```
 
-- `training_dataset/mixed/`: training pool for full-shot.
-- `test_dataset/<dataset_name>/`: per-dataset test folders.
-- `test_dataset/controlled_dataset/<dataset_name>/`: controlled-access datasets stored as subfolders; the script treats each subfolder as an independent dataset (e.g. `5_T1DEXI`, `8_DiaTrend`, `OhioT1DM`).
+- `hf_cache/train/mixed/`: training pool for full-shot / few-shot.
+- `hf_cache/test/<dataset_name>/`: per-dataset test folders.
+
+You can also skip CSV export and load from HuggingFace directly by passing `--data-source hf` (requires `datasets`).
 
 CSV column requirements (auto-detected):
 - time column: `timestamp` / `time` / `datetime` / `date_time` / `date`
@@ -38,13 +36,13 @@ Run from the project root so the default relative paths work.
 ### Full-shot (train on mixed; test on each dataset)
 
 ```
-python GPFormer/predict_glucose_multiwindow_gpformer_fullshot.py --data-root-train training_dataset/mixed --data-root-test test_dataset
+python GPFormer/predict_glucose_multiwindow_gpformer_fullshot.py --data-root-train hf_cache/train/mixed --data-root-test hf_cache/test
 ```
 
 ### Few-shot (same training pool; fewer training windows via larger stride)
 
 ```
-python GPFormer/predict_glucose_multiwindow_gpformer_fewshot.py --data-root-train training_dataset/mixed --data-root-test test_dataset
+python GPFormer/predict_glucose_multiwindow_gpformer_fewshot.py --data-root-train hf_cache/train/mixed --data-root-test hf_cache/test
 ```
 
 ### Defaults
@@ -61,7 +59,7 @@ python GPFormer/predict_glucose_multiwindow_gpformer_fewshot.py --data-root-trai
 
 ### Common Optional Args
 
-- `--datasets <name1> <name2> ...`: run only selected datasets (folder names under `test_dataset/`, plus subfolder names under `test_dataset/controlled_dataset/`)
+- `--datasets <name1> <name2> ...`: run only selected datasets (dataset names from the HF split, or folder names under `hf_cache/test/` in CSV mode)
 - `--context-hours ...` / `--horizons-minutes ...`: select context windows / prediction horizons
 - `--eval-stride-steps N`: evaluation sliding-window stride (`0` means `context_steps`; `1` means 5 minutes)
 - training: `--train-epochs` / `--train-batch-size` / `--train-stride-steps` / `--max-train-windows` / `--max-train-steps`

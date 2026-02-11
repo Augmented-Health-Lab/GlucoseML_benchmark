@@ -5,3 +5,26 @@ training_dataset
 *.safetensors
 *.pt
 
+# Generated results / datasets
+*.csv
+*.pyc
+data_processing
+
+timesfm/multi_horizon_results_timesfm_fewshot
+timesfm/multi_horizon_results_timesfm_fullshot
+timesfm/multi_horizon_results_timesfm_zeroshot
+
+uni2ts/multi_horizon_results_uni2ts_fewshot
+uni2ts/multi_horizon_results_uni2ts_fullshot
+uni2ts/multi_horizon_results_uni2ts_zeroshot
+
+GPFormer/multi_horizon_results_gpformer_fewshot
+GPFormer/multi_horizon_results_gpformer_fullshot
+
+timer-model/multi_horizon_results_timer_fewshot
+timer-model/multi_horizon_results_timer_fullshot
+timer-model/multi_horizon_results_timer_zeroshot
+
+chronos_result_zeroshot_allds
+
+paper_tables_ctx12h_hor30m

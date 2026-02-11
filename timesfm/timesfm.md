@@ -11,17 +11,19 @@ Only 3 runnable scripts are kept under `timesfm/`:
 From the project root (`GlucoseML_benchmark/`), the recommended directory structure is:
 
 ```
-training_dataset/
-  mixed/
-    <participant_id>.csv
-
-test_dataset/
-  <dataset_name>/
-    <participant_id>.csv
+hf_cache/
+  train/
+    mixed/
+      <dataset>__<subject_id>.csv
+  test/
+    <dataset_name>/
+      <subject_id>.csv
 ```
 
-- `training_dataset/mixed/`: training pool for full-shot / few-shot.
-- `test_dataset/<dataset_name>/`: per-dataset test folders (the scripts evaluate each dataset separately).
+- `hf_cache/train/mixed/`: training pool for full-shot / few-shot.
+- `hf_cache/test/<dataset_name>/`: per-dataset test folders (the scripts evaluate each dataset separately).
+
+You can also skip CSV export and load from HuggingFace directly by passing `--data-source hf` (requires `datasets`).
 
 CSV column requirements (auto-detected):
 - time column: `timestamp` / `time` / `datetime` / `date_time` / `date`
@@ -36,19 +38,19 @@ Run from the project root so the default relative paths work.
 Evaluate test only:
 
 ```
-python timesfm/predict_glucose_multiwindow_timesfm_zeroshot.py --splits test --data-root-test test_dataset
+python timesfm/predict_glucose_multiwindow_timesfm_zeroshot.py --splits test --data-root-test hf_cache/test
 ```
 
 ### Full-shot (train on mixed; test on each dataset)
 
 ```
-python timesfm/predict_glucose_multiwindow_timesfm_fullshot.py --data-root-train training_dataset/mixed --data-root-test test_dataset
+python timesfm/predict_glucose_multiwindow_timesfm_fullshot.py --data-root-train hf_cache/train/mixed --data-root-test hf_cache/test
 ```
 
 ### Few-shot
 
 ```
-python timesfm/predict_glucose_multiwindow_timesfm_fewshot.py --data-root-train training_dataset/mixed --data-root-test test_dataset
+python timesfm/predict_glucose_multiwindow_timesfm_fewshot.py --data-root-train hf_cache/train/mixed --data-root-test hf_cache/test
 ```
 
 ### Defaults (Full-shot / Few-shot)
