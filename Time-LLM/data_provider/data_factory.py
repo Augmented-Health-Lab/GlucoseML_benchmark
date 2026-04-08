@@ -84,13 +84,19 @@ def data_provider(args, flag):
         #         num_workers=args.num_workers,
         #         drop_last=False
         #     )
-        if flag == 'train' and args.max_windows_per_epoch > 0:
-            sampler = SubsampleWindowSampler(
-                data_set,
-                max_windows_per_epoch=args.max_windows_per_epoch,
-                seed=args.seed
-            )
-            shuffle_flag = False   # sampler & shuffle not the same time
+        if flag == 'train':
+            if args.max_windows_per_epoch > 0:
+                sampler = SubsampleWindowSampler(
+                    data_set,
+                    max_windows_per_epoch=args.max_windows_per_epoch,
+                    seed=args.seed
+                )
+                shuffle_flag = False   # sampler and shuffle are mutually exclusive
+            else:
+                shuffle_flag = True
+        else:
+            # val and test: never shuffle
+            shuffle_flag = False       # ← this is the fix
 
         data_loader = DataLoader(
             data_set,
