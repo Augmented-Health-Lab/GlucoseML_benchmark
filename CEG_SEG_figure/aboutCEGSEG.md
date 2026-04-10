@@ -1,0 +1,8 @@
+# Clarke Error Grid (CEG)
+Developed by Clarke et al. in 1987, the CEG was the first standardized tool for evaluating the clinical accuracy of blood glucose measurements. It plots predicted versus reference glucose values across five zones: Zone A represents clinically accurate predictions within 20% of the reference value; Zone B contains predictions that deviate more than 20% but would lead to benign or no treatment; Zone C contains predictions that would lead to unnecessary treatment corrections; Zone D contains predictions that fail to detect dangerous hypo- or hyperglycemia; and Zone E contains predictions that would lead to treatment in the opposite direction of what is needed, the most dangerous category.
+
+# Surveillance Error Grid (SEG)
+Introduced by Klonoff et al. in 2014, the SEG was designed to provide a more nuanced and clinically updated assessment than the CEG, drawing on input from over 200 diabetes clinicians. Rather than discrete zones, it uses a continuous risk scoring system based on a color-coded heat map, where each point in the prediction-reference space is assigned a risk score from 0 (no risk) to 4 (extreme risk). The SEG incorporates modern clinical understanding of the asymmetric dangers of hypoglycemia versus hyperglycemia, reflecting that errors near hypoglycemic thresholds carry disproportionately higher clinical risk than equivalent errors in the hyperglycemic range.
+
+Both grids are particularly relevant for evaluating glucose forecasting models in diabetes management, where clinical consequences of prediction errors are highly non-uniform across the glycemic range.
+

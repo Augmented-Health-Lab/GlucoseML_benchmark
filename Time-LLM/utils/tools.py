@@ -281,6 +281,9 @@ def test(args, accelerator, model, train_loader, vali_loader, criterion):
 
 
 def load_content(args):
+    if hasattr(args, 'prompt_file') and args.prompt_file:
+        with open(args.prompt_file, 'r') as f:
+            return f.read()
     if 'ETT' in args.data:
         file = 'ETT'
     else:

@@ -1,0 +1,739 @@
+import argparse
+import logging
+import math
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, Iterable, List, Optional, Set, Tuple
+
+import numpy as np
+import pandas as pd
+import torch
+from tqdm import tqdm
+
+
+try:
+    import timesfm
+except ModuleNotFoundError:  # pragma: no cover
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+    import timesfm
+
+
+MODEL_NAME = "google/timesfm-2.5-200m-pytorch"
+DATA_SPLITS = {
+    "train": Path(__file__).resolve().parent.parent / "training_dataset",
+    "test": Path(__file__).resolve().parent.parent / "test_dataset",
+}
+
+RESULTS_ROOT = Path(__file__).resolve().parent / "quantile"
+
+STEP_MINUTES = 5
+FREQ = "5min"
+STEP_DELTA = np.timedelta64(STEP_MINUTES, "m")
+
+# Only 12-hour context window for quantile evaluation
+INPUT_WINDOWS_HOURS = [12]
+HORIZONS_MINUTES = [15, 30, 60, 90]
+
+DEFAULT_BATCH_SIZE = 8
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+torch.set_default_device(DEVICE)
+
+LOGGER = logging.getLogger(__name__)
+
+# Default quantile levels output by TimesFM when use_continuous_quantile_head=True.
+# Index mapping: 0→0.1, 1→0.2, 2→0.3, 3→0.4, 4→0.5, 5→0.6, 6→0.7, 7→0.8, 8→0.9
+Q10_IDX = 0   # lower bound of PI80
+Q20_IDX = 1   # lower bound of PI60 (closest to Q25)
+Q80_IDX = 7   # upper bound of PI60 (closest to Q75)
+Q90_IDX = 8   # upper bound of PI80
+
+
+def _find_column(columns: Iterable[str], candidates: Iterable[str]) -> Optional[str]:
+    lowered = {col.lower(): col for col in columns}
+    for candidate in candidates:
+        if candidate in lowered:
+            return lowered[candidate]
+    return None
+
+
+def load_subject_dataframe(csv_path: Path) -> pd.DataFrame:
+    df = pd.read_csv(csv_path)
+    timestamp_col = _find_column(df.columns, ["timestamp", "time", "datetime", "date_time", "date"])
+    value_col = _find_column(
+        df.columns,
+        ["bgvalue", "glucose", "glucose_value", "sensor_glucose", "value", "glucose_value_mmol_l"],
+    )
+
+    if timestamp_col is None:
+        raise ValueError(f"Timestamp column not found in {csv_path}")
+    if value_col is None:
+        if len(df.columns) < 2:
+            raise ValueError(f"Value column not found in {csv_path}")
+        value_col = df.columns[1]
+
+    df[timestamp_col] = pd.to_datetime(df[timestamp_col], errors="coerce")
+    df[value_col] = pd.to_numeric(df[value_col], errors="coerce")
+    df = df.dropna(subset=[timestamp_col, value_col])
+    df = df[[timestamp_col, value_col]].rename(columns={timestamp_col: "timestamp", value_col: "value"})
+    df["value"] = df["value"].astype("float32")
+    return df
+
+
+def load_subject(csv_paths: List[Path]) -> pd.DataFrame:
+    frames: List[pd.DataFrame] = []
+    for path in csv_paths:
+        try:
+            frames.append(load_subject_dataframe(path))
+        except ValueError as exc:
+            LOGGER.warning("%s: skipped while merging (%s)", path, exc)
+    if not frames:
+        raise ValueError(f"No valid data points in {[str(p) for p in csv_paths]}")
+
+    df = pd.concat(frames, ignore_index=True)
+    df = df.sort_values("timestamp").dropna(subset=["timestamp", "value"])
+    df = df.drop_duplicates(subset="timestamp")
+    if df.empty:
+        raise ValueError(f"No valid data points after merging {[str(p) for p in csv_paths]}")
+    return df.reset_index(drop=True)
+
+
+def collect_subject_groups(dataset_dir: Path) -> Dict[str, List[Path]]:
+    groups: Dict[str, List[Path]] = {}
+    for csv_path in sorted(dataset_dir.rglob("*.csv")):
+        participant_id = csv_path.stem
+        groups.setdefault(participant_id, []).append(csv_path.resolve())
+    return groups
+
+
+def ensure_results_root(root: Path) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+
+
+def setup_logging(root: Path) -> Path:
+    ensure_results_root(root)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_path = root / f"predict_glucose_timesfm_quantile_{timestamp}.log"
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[logging.StreamHandler(), logging.FileHandler(log_path, encoding="utf-8")],
+        force=True,
+    )
+    LOGGER.setLevel(logging.INFO)
+    return log_path
+
+
+def context_steps_from_hours(hours: int) -> int:
+    steps = int(round(hours * 60 / STEP_MINUTES))
+    return max(1, steps)
+
+
+def horizon_steps_from_minutes(minutes: int) -> int:
+    steps = int(round(minutes / STEP_MINUTES))
+    return max(1, steps)
+
+
+def normalize_timestamps(timestamps: pd.Series) -> np.ndarray:
+    ts = pd.to_datetime(timestamps, errors="coerce", utc=True).dt.tz_convert(None)
+    arr = ts.to_numpy(dtype="datetime64[ns]")
+    if np.isnat(arr).any():
+        raise ValueError("Timestamps contain NaT values after normalization.")
+    return arr
+
+
+def consecutive_gap_counts(timestamps: np.ndarray) -> np.ndarray:
+    n = int(timestamps.shape[0])
+    counts = np.zeros(n, dtype=np.int32)
+    if n < 2:
+        return counts
+
+    diffs = timestamps[1:] - timestamps[:-1]
+    is_step = diffs == STEP_DELTA
+    for idx in range(n - 2, -1, -1):
+        counts[idx] = counts[idx + 1] + 1 if bool(is_step[idx]) else 0
+    return counts
+
+
+def find_latest_contiguous_start(
+    timestamps: np.ndarray,
+    context_steps: int,
+    future_steps: int,
+) -> Optional[int]:
+    total_len = context_steps + future_steps
+    if total_len <= 0:
+        return None
+    if len(timestamps) < total_len:
+        return None
+
+    runs = consecutive_gap_counts(timestamps)
+    needed_gaps = total_len - 1
+    latest_start = len(timestamps) - total_len
+    for start in range(latest_start, -1, -1):
+        if int(runs[start]) >= needed_gaps:
+            return start
+    return None
+
+
+@dataclass(frozen=True)
+class ForecastConfig:
+    context_hours: int
+    horizon_minutes: int
+    context_steps: int
+    horizon_steps: int
+
+
+def load_timesfm_model(
+    model_name: str,
+    max_context_steps: int,
+    max_horizon_steps: int,
+    batch_size: int,
+) -> timesfm.TimesFM_2p5_200M_torch:
+    torch.set_float32_matmul_precision("high")
+    LOGGER.info("Loading TimesFM model '%s'", model_name)
+    model = timesfm.TimesFM_2p5_200M_torch.from_pretrained(model_name)
+
+    LOGGER.info("TimesFM model loaded on device: %s", DEVICE)
+    LOGGER.info("CUDA available: %s", torch.cuda.is_available())
+
+    input_patch_len = int(getattr(getattr(model, "model", None), "p", 0) or 0)
+    output_patch_len = int(getattr(getattr(model, "model", None), "o", 0) or 0)
+    if input_patch_len > 0 and max_context_steps % input_patch_len != 0:
+        rounded = int(math.ceil(max_context_steps / input_patch_len) * input_patch_len)
+        LOGGER.info(
+            "Adjusting compile max_context from %d -> %d to match input_patch_len=%d",
+            max_context_steps, rounded, input_patch_len,
+        )
+        max_context_steps = rounded
+    if output_patch_len > 0 and max_horizon_steps % output_patch_len != 0:
+        rounded = int(math.ceil(max_horizon_steps / output_patch_len) * output_patch_len)
+        LOGGER.info(
+            "Adjusting compile max_horizon from %d -> %d to match output_patch_len=%d",
+            max_horizon_steps, rounded, output_patch_len,
+        )
+        max_horizon_steps = rounded
+
+    model.compile(
+        timesfm.ForecastConfig(
+            max_context=max_context_steps,
+            max_horizon=max_horizon_steps,
+            normalize_inputs=True,
+            use_continuous_quantile_head=True,
+            force_flip_invariance=True,
+            infer_is_positive=True,
+            fix_quantile_crossing=True,
+            per_core_batch_size=max(1, int(batch_size)),
+        )
+    )
+
+    if torch.cuda.is_available():
+        allocated = torch.cuda.memory_allocated() / 1024**2
+        reserved = torch.cuda.memory_reserved() / 1024**2
+        LOGGER.info("CUDA memory allocated: %.1f MB", allocated)
+        LOGGER.info("CUDA memory reserved: %.1f MB", reserved)
+
+    return model
+
+
+def evaluate_subject(
+    model: timesfm.TimesFM_2p5_200M_torch,
+    participant_id: str,
+    df: pd.DataFrame,
+    cfg: ForecastConfig,
+    stride_steps: int,
+    batch_size: int,
+    metric_mode: str,
+) -> Tuple[float, float, int, int, float, float, float, float]:
+    """
+    Returns:
+        (total_sse, total_ae, total_points, total_windows,
+         pi80_coverage, pi80_width, pi60_coverage, pi60_width)
+
+    PI80 uses Q10/Q90; PI60 uses Q20/Q80 (the closest default quantiles to Q25/Q75).
+    PI metrics are averaged over all evaluated windows (metric_mode="final")
+    or all horizon steps across all windows (metric_mode="all").
+    """
+    if len(df) < cfg.context_steps + cfg.horizon_steps:
+        return 0.0, 0.0, 0, 0, float("nan"), float("nan"), float("nan"), float("nan")
+
+    values = df["value"].to_numpy(dtype="float32")
+    timestamps = normalize_timestamps(df["timestamp"])
+    contiguous_runs = consecutive_gap_counts(timestamps)
+    total_len = cfg.context_steps + cfg.horizon_steps
+    required_gaps = total_len - 1
+
+    total_sse = 0.0
+    total_ae = 0.0
+    total_points = 0
+    total_windows = 0
+
+    # PI accumulators
+    # PI80 uses Q10/Q90; PI60 uses Q20/Q80 (closest defaults to Q25/Q75)
+    pi80_covered_sum = 0.0
+    pi80_width_sum   = 0.0
+    pi60_covered_sum = 0.0
+    pi60_width_sum   = 0.0
+    pi_count         = 0
+
+    batch_histories: List[np.ndarray] = []
+    batch_targets: List[np.ndarray] = []
+    batch_starts: List[int] = []
+    batch_norms: List[Tuple[float, float]] = []   # (mu, sigma) per window
+
+    def flush_batch() -> None:
+        nonlocal total_sse, total_ae, total_points, total_windows
+        nonlocal pi80_covered_sum, pi80_width_sum, pi60_covered_sum, pi60_width_sum, pi_count
+        nonlocal batch_histories, batch_targets, batch_starts, batch_norms
+        if not batch_histories:
+            return
+        try:
+            with torch.inference_mode():
+                preds, quantile_preds = model.forecast(
+                    horizon=cfg.horizon_steps,
+                    inputs=batch_histories.copy(),
+                )
+        except Exception as exc:
+            LOGGER.warning("%s: prediction failure for %d windows (%s)", participant_id, len(batch_histories), exc)
+            batch_histories = []
+            batch_targets = []
+            batch_starts = []
+            batch_norms = []
+            return
+
+        preds = np.asarray(preds, dtype="float32")
+        # quantile_preds shape: (batch, horizon, num_quantiles) — in normalized space
+        quantile_preds = np.asarray(quantile_preds, dtype="float32")
+
+        for i, (pred_vec, target_vals) in enumerate(zip(preds, batch_targets)):
+            mu, sigma = batch_norms[i]
+            # Denormalize quantile predictions back to mg/dL
+            q_vec = quantile_preds[i] * sigma + mu  # (horizon_steps, num_quantiles)
+
+            if metric_mode == "final":
+                step = cfg.horizon_steps - 1
+                pred_val = float(pred_vec[step])
+                target_val = float(target_vals[step])
+                if math.isnan(pred_val) or math.isnan(target_val):
+                    continue
+
+                err = pred_val - target_val
+                total_sse += float(err * err)
+                total_ae += float(abs(err))
+                total_points += 1
+                total_windows += 1
+
+                q10 = float(q_vec[step, Q10_IDX])
+                q20 = float(q_vec[step, Q20_IDX])
+                q80 = float(q_vec[step, Q80_IDX])
+                q90 = float(q_vec[step, Q90_IDX])
+                pi80_covered_sum += float(q10 <= target_val <= q90)
+                pi80_width_sum   += q90 - q10
+                pi60_covered_sum += float(q20 <= target_val <= q80)
+                pi60_width_sum   += q80 - q20
+                pi_count         += 1
+                continue
+
+            # metric_mode == "all"
+            valid_len = min(len(pred_vec), len(target_vals), cfg.horizon_steps)
+            if valid_len == 0:
+                continue
+            pred_slice = pred_vec[:valid_len]
+            targets = target_vals[:valid_len]
+            if np.isnan(pred_slice).any() or np.isnan(targets).any():
+                continue
+            errors = pred_slice - targets
+            total_sse += float(np.sum(errors**2))
+            total_ae += float(np.sum(np.abs(errors)))
+            total_points += int(valid_len)
+            total_windows += 1
+
+            for step_idx in range(valid_len):
+                tgt = float(targets[step_idx])
+                q10 = float(q_vec[step_idx, Q10_IDX])
+                q20 = float(q_vec[step_idx, Q20_IDX])
+                q80 = float(q_vec[step_idx, Q80_IDX])
+                q90 = float(q_vec[step_idx, Q90_IDX])
+                pi80_covered_sum += float(q10 <= tgt <= q90)
+                pi80_width_sum   += q90 - q10
+                pi60_covered_sum += float(q20 <= tgt <= q80)
+                pi60_width_sum   += q80 - q20
+                pi_count         += 1
+
+        batch_histories = []
+        batch_targets = []
+        batch_starts = []
+        batch_norms = []
+
+    for start in range(0, len(df) - cfg.context_steps - cfg.horizon_steps + 1, stride_steps):
+        if int(contiguous_runs[start]) < required_gaps:
+            continue
+        end = start + cfg.context_steps
+        target_end = end + cfg.horizon_steps
+
+        history_values = values[start:end].astype("float32")
+        target_values = values[end:target_end].astype("float32")
+        if np.isnan(history_values).any() or np.isnan(target_values).any():
+            continue
+
+        mu    = float(np.mean(history_values))
+        sigma = float(np.std(history_values)) or 1.0
+
+        batch_histories.append(history_values)
+        batch_targets.append(target_values)
+        batch_starts.append(start)
+        batch_norms.append((mu, sigma))
+        if len(batch_histories) >= batch_size:
+            flush_batch()
+
+    flush_batch()
+
+    if pi_count > 0:
+        pi80_cov = pi80_covered_sum / pi_count
+        pi80_w   = pi80_width_sum   / pi_count
+        pi60_cov = pi60_covered_sum / pi_count
+        pi60_w   = pi60_width_sum   / pi_count
+    else:
+        pi80_cov = pi80_w = pi60_cov = pi60_w = float("nan")
+
+    return total_sse, total_ae, total_points, total_windows, pi80_cov, pi80_w, pi60_cov, pi60_w
+
+
+def load_existing_metrics(output_path: Path) -> pd.DataFrame:
+    if not output_path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(output_path)
+    except Exception as exc:
+        LOGGER.warning("Failed to load existing metrics from %s (%s)", output_path, exc)
+        return pd.DataFrame()
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Zero-shot: evaluate TimesFM with quantile/probabilistic output on 5-minute CGM data."
+    )
+    parser.add_argument(
+        "--task",
+        choices=["eval", "latest"],
+        default="eval",
+        help="Run rolling-window evaluation (eval) or produce one latest forecast per participant (latest).",
+    )
+    parser.add_argument(
+        "--model-name",
+        type=str,
+        default=MODEL_NAME,
+        help="HuggingFace model id to load.",
+    )
+    parser.add_argument(
+        "--splits",
+        nargs="+",
+        default=["test"],
+        choices=["train", "test"],
+        help="Which dataset splits to evaluate.",
+    )
+    parser.add_argument(
+        "--data-root-train",
+        type=Path,
+        default=DATA_SPLITS["train"],
+        help="Root directory containing dataset subfolders for the train split.",
+    )
+    parser.add_argument(
+        "--data-root-test",
+        type=Path,
+        default=DATA_SPLITS["test"],
+        help="Root directory containing dataset subfolders for the test split.",
+    )
+    parser.add_argument(
+        "--datasets",
+        nargs="*",
+        default=None,
+        help="Optional dataset folder names to include (default: all).",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=DEFAULT_BATCH_SIZE,
+        help="Inference batch size.",
+    )
+    parser.add_argument(
+        "--stride-steps",
+        type=int,
+        default=1,
+        help="Sliding window stride in steps (default: 1 = 5 minutes; 0 = context_steps).",
+    )
+    parser.add_argument(
+        "--metric-mode",
+        choices=["final", "all"],
+        default="final",
+        help="Use only the final horizon step (final) or all horizon steps (all) for error metrics.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=RESULTS_ROOT,
+        help="Root folder for all saved results (default: ./quantile).",
+    )
+    parser.add_argument(
+        "--latest-requires-truth",
+        action="store_true",
+        help="For --task latest, pick the latest window that still has ground truth for the horizon.",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Recompute and overwrite existing results instead of skipping completed rows.",
+    )
+    return parser.parse_args()
+
+
+CHECKPOINT_EVERY = 5
+
+def main() -> None:
+    args = parse_args()
+    results_root: Path = args.output_dir
+    log_path = setup_logging(results_root)
+    LOGGER.info("Logging to %s", log_path)
+    ensure_results_root(results_root)
+
+    split_roots = {
+        "train": args.data_root_train,
+        "test":  args.data_root_test,
+    }
+
+    configs: List[ForecastConfig] = []
+    for context_hours in INPUT_WINDOWS_HOURS:
+        for horizon_minutes in HORIZONS_MINUTES:
+            configs.append(
+                ForecastConfig(
+                    context_hours=context_hours,
+                    horizon_minutes=horizon_minutes,
+                    context_steps=context_steps_from_hours(context_hours),
+                    horizon_steps=horizon_steps_from_minutes(horizon_minutes),
+                )
+            )
+
+    max_context_steps = max(cfg.context_steps for cfg in configs)
+    max_horizon_steps = max(cfg.horizon_steps for cfg in configs)
+    model = load_timesfm_model(
+        args.model_name, max_context_steps=max_context_steps,
+        max_horizon_steps=max_horizon_steps, batch_size=args.batch_size,
+    )
+
+    for split_name in args.splits:
+        data_root = split_roots[split_name]
+        if not data_root.exists():
+            LOGGER.warning("Split '%s' not found at %s (skipping)", split_name, data_root)
+            continue
+
+        dataset_dirs = sorted(p for p in data_root.iterdir() if p.is_dir())
+        if args.datasets is not None:
+            allowed = set(args.datasets)
+            dataset_dirs = [p for p in dataset_dirs if p.name in allowed]
+        if not dataset_dirs:
+            LOGGER.warning("No dataset folders found in %s for split '%s'", data_root, split_name)
+            continue
+
+        for dataset_dir in dataset_dirs:
+            output_suffix = "metrics" if args.task == "eval" else "latest_predictions"
+            output_path = results_root / f"{dataset_dir.name}_{split_name}_{output_suffix}.csv"
+
+            existing_df = pd.DataFrame()
+            completed_keys: Set[Tuple[str, int, int]] = set()
+            if not args.overwrite:
+                existing_df = load_existing_metrics(output_path)
+                required_cols = {"participant_id", "context_hours", "horizon_minutes"}
+                if not existing_df.empty and required_cols.issubset(existing_df.columns):
+                    completed_keys = set(
+                        (
+                            str(row["participant_id"]),
+                            int(row["context_hours"]),
+                            int(row["horizon_minutes"]),
+                        )
+                        for _, row in existing_df.iterrows()
+                    )
+                    LOGGER.info(
+                        "%s (%s split): found %d existing rows, skipping unless --overwrite is set.",
+                        dataset_dir.name, split_name, len(completed_keys),
+                    )
+                elif not existing_df.empty:
+                    LOGGER.warning(
+                        "%s (%s split): existing results missing key columns, ignoring cached content.",
+                        dataset_dir.name, split_name,
+                    )
+                    existing_df = pd.DataFrame()
+
+            subject_groups = collect_subject_groups(dataset_dir)
+            records: List[Dict] = []
+            processed_counter = 0
+
+            LOGGER.info("%s (%s split): %d participants", dataset_dir.name, split_name, len(subject_groups))
+            for participant_id, csv_paths in tqdm(
+                subject_groups.items(),
+                desc=f"{dataset_dir.name} | {split_name}",
+                total=len(subject_groups),
+            ):
+                try:
+                    df = load_subject(csv_paths)
+                    LOGGER.info(
+                        "Processing %s | %s | rows=%d | files=%s",
+                        dataset_dir.name, participant_id, len(df),
+                        [p.name for p in csv_paths],
+                    )
+                except (ValueError, pd.errors.EmptyDataError) as exc:
+                    LOGGER.warning("%s / %s: skipped (%s)", dataset_dir.name, participant_id, exc)
+                    continue
+
+                for cfg in configs:
+                    key = (participant_id, cfg.context_hours, cfg.horizon_minutes)
+                    if key in completed_keys:
+                        continue
+
+                    if args.task == "latest":
+                        required_future = cfg.horizon_steps if args.latest_requires_truth else 0
+                        try:
+                            timestamps = normalize_timestamps(df["timestamp"])
+                        except ValueError as exc:
+                            LOGGER.warning("%s: skipped due to invalid timestamps (%s)", participant_id, exc)
+                            continue
+                        start = find_latest_contiguous_start(timestamps, cfg.context_steps, required_future)
+                        if start is None:
+                            continue
+                        end = start + cfg.context_steps
+
+                        history = df["value"].iloc[start:end].to_numpy(dtype="float32")
+                        if np.isnan(history).any():
+                            continue
+                        mu    = float(np.mean(history))
+                        sigma = float(np.std(history)) or 1.0
+                        try:
+                            with torch.inference_mode():
+                                preds, quantile_preds = model.forecast(
+                                    horizon=cfg.horizon_steps,
+                                    inputs=[history],
+                                )
+                            preds = np.asarray(preds, dtype="float32")[0]
+                            # Denormalize quantile predictions from normalized space to mg/dL
+                            quantile_preds = np.asarray(quantile_preds, dtype="float32")[0] * sigma + mu
+                        except Exception as exc:
+                            LOGGER.warning("%s: latest prediction failure (%s)", participant_id, exc)
+                            continue
+
+                        step = cfg.horizon_steps - 1
+                        pred_final = float(preds[step])
+                        pred_ts = pd.to_datetime(timestamps[end - 1]) + pd.to_timedelta(cfg.horizon_minutes, unit="m")
+                        true_final: Optional[float] = None
+                        if args.latest_requires_truth:
+                            true_final = float(df["value"].iloc[end + cfg.horizon_steps - 1])
+
+                        records.append(
+                            {
+                                "dataset": dataset_dir.name,
+                                "split": split_name,
+                                "participant_id": participant_id,
+                                "context_hours": cfg.context_hours,
+                                "horizon_minutes": cfg.horizon_minutes,
+                                "context_steps": cfg.context_steps,
+                                "horizon_steps": cfg.horizon_steps,
+                                "step_minutes": STEP_MINUTES,
+                                "freq": FREQ,
+                                "prediction_timestamp": pred_ts,
+                                "prediction_value": pred_final,
+                                "truth_value": true_final,
+                                "q10": float(quantile_preds[step, Q10_IDX]),
+                                "q20": float(quantile_preds[step, Q20_IDX]),
+                                "q80": float(quantile_preds[step, Q80_IDX]),
+                                "q90": float(quantile_preds[step, Q90_IDX]),
+                                "task": "latest",
+                                "latest_requires_truth": bool(args.latest_requires_truth),
+                            }
+                        )
+                    else:
+                        stride_steps = cfg.context_steps if args.stride_steps <= 0 else args.stride_steps
+                        sse, sae, points, windows, pi80_cov, pi80_w, pi60_cov, pi60_w = evaluate_subject(
+                            model,
+                            participant_id,
+                            df,
+                            cfg,
+                            stride_steps=stride_steps,
+                            batch_size=args.batch_size,
+                            metric_mode=args.metric_mode,
+                        )
+                        if points == 0 or windows == 0:
+                            continue
+
+                        rmse = math.sqrt(sse / points)
+                        mae = sae / points
+                        records.append(
+                            {
+                                "dataset": dataset_dir.name,
+                                "split": split_name,
+                                "participant_id": participant_id,
+                                "context_hours": cfg.context_hours,
+                                "horizon_minutes": cfg.horizon_minutes,
+                                "context_steps": cfg.context_steps,
+                                "horizon_steps": cfg.horizon_steps,
+                                "step_minutes": STEP_MINUTES,
+                                "freq": FREQ,
+                                "stride_steps": stride_steps,
+                                "metric_mode": args.metric_mode,
+                                "rmse": rmse,
+                                "mae": mae,
+                                "windows": windows,
+                                "pi80_coverage": pi80_cov,
+                                "pi80_width":    pi80_w,
+                                "pi60_coverage": pi60_cov,  # Q20–Q80 interval
+                                "pi60_width":    pi60_w,
+                                "task": "eval",
+                            }
+                        )
+
+                processed_counter += 1
+
+                if processed_counter % CHECKPOINT_EVERY == 0 and records:
+                    checkpoint_df = pd.DataFrame(records)
+                    if not existing_df.empty:
+                        checkpoint_df = pd.concat([existing_df, checkpoint_df], ignore_index=True)
+                    checkpoint_df = checkpoint_df.drop_duplicates(
+                        subset=["participant_id", "context_hours", "horizon_minutes"],
+                        keep="last",
+                    )
+                    tmp_path = output_path.with_suffix(".checkpoint.csv")
+                    checkpoint_df.to_csv(tmp_path, index=False)
+                    LOGGER.info("Checkpoint saved: %s (%d rows)", tmp_path, len(checkpoint_df))
+
+            # --- save final metrics ---
+            new_df = pd.DataFrame(records)
+            if args.overwrite or existing_df.empty:
+                final_df = new_df
+            else:
+                final_df = pd.concat([existing_df, new_df], ignore_index=True)
+                final_df = final_df.drop_duplicates(
+                    subset=["participant_id", "context_hours", "horizon_minutes"], keep="last"
+                ).reset_index(drop=True)
+
+            if final_df.empty:
+                LOGGER.warning("%s (%s split): no metrics to write.", dataset_dir.name, split_name)
+            else:
+                desired_order = [
+                    "dataset", "split", "participant_id", "context_hours", "horizon_minutes",
+                    "context_steps", "horizon_steps", "step_minutes", "freq", "task",
+                    "stride_steps", "metric_mode", "latest_requires_truth",
+                    "prediction_timestamp", "prediction_value", "truth_value",
+                    "rmse", "mae", "windows",
+                    "pi80_coverage", "pi80_width", "pi60_coverage", "pi60_width",
+                    "q10", "q20", "q80", "q90",
+                ]
+                ordered_cols = [col for col in desired_order if col in final_df.columns]
+                remaining_cols = [col for col in final_df.columns if col not in ordered_cols]
+                final_df = final_df[ordered_cols + remaining_cols]
+                final_df = final_df.sort_values(
+                    ["participant_id", "context_hours", "horizon_minutes"]
+                ).reset_index(drop=True)
+                final_df.to_csv(output_path, index=False)
+                LOGGER.info("Saved metrics to %s (%d rows)", output_path, len(final_df))
+
+
+if __name__ == "__main__":
+    main()
