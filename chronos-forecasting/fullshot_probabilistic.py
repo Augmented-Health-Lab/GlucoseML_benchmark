@@ -8,29 +8,29 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from chronos import BaseChronosPipeline, Chronos2Pipeline
+from chronos import Chronos2Pipeline
 import os
 from pathlib import Path
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
-# Load the Chronos-2 pipeline
-# GPU recommended for faster inference, but CPU is also supported using device_map="cpu"
-if torch.cuda.is_available():
-    device = "cuda"
-elif torch.backends.mps.is_available():
-    device = "mps"
-else:
-    device = "cpu"
-
-pipeline = BaseChronosPipeline.from_pretrained(
-    "amazon/chronos-2",
-    device_map=device
-)
-pipeline: Chronos2Pipeline = BaseChronosPipeline.from_pretrained("amazon/chronos-2", device_map=device)
-
 # Quantile levels to request from the model.
 # Column names in pred_df will be the string versions: "0.1", "0.25", "0.5", "0.75", "0.9"
 QUANTILE_LEVELS = [0.1, 0.25, 0.5, 0.75, 0.9]
+
+
+def load_finetuned_chronos2_pipeline(model_path):
+    """
+    Load a Chronos-2 checkpoint saved after LoRA fine-tuning.
+
+    Chronos-2 LoRA checkpoints should be loaded through Chronos2Pipeline
+    directly, not through the generic base pipeline, so Chronos can detect
+    adapter_config.json and route loading through PEFT correctly.
+    """
+    return Chronos2Pipeline.from_pretrained(
+        model_path,
+        device_map="auto",
+        dtype=torch.bfloat16,
+    )
 
 
 def load_and_prepare_data_from_hf(subject):
@@ -70,35 +70,6 @@ def split_into_sequences(df, gap_threshold_hours=1):
 def rolling_window_forecast(sequences, pipeline, context_length, prediction_length=18, step_size=1, verbose=False):
     """
     Perform rolling window probabilistic forecasting across all sequences.
-
-    Parameters:
-    -----------
-    sequences : list of DataFrames
-        List of continuous data sequences
-    pipeline : Chronos2Pipeline
-        The forecasting pipeline
-    context_length : int
-        Number of historical time steps to use as context
-    prediction_length : int
-        Number of future time steps to predict
-    step_size : int
-        Step size for rolling window
-    verbose : bool
-        Whether to print progress
-
-    Returns:
-    --------
-    all_predictions : list
-        List of mean prediction arrays, shape (prediction_length,) each
-    all_quantiles : dict of list
-        Keys are quantile level strings ("0.1", "0.25", etc.);
-        values are lists of arrays, shape (prediction_length,) each
-    all_ground_truth : list
-        List of ground truth arrays
-    all_timestamps : list
-        List of timestamp arrays
-    all_sequence_ids : list
-        List of sequence IDs for each prediction
     """
     all_predictions  = []
     all_ground_truth = []
@@ -136,12 +107,9 @@ def rolling_window_forecast(sequences, pipeline, context_length, prediction_leng
                     quantile_levels=QUANTILE_LEVELS
                 )
 
-                # pred_df is long-format: one row per future timestep.
-                # Filter to the target variate and sort by timestamp to be safe.
                 rows = pred_df[pred_df['target_name'] == 'target'].sort_values('timestamp')
 
-                # Point forecast (mean)
-                predictions  = rows['predictions'].values           # (prediction_length,)
+                predictions  = rows['predictions'].values
                 ground_truth = ground_truth_window['target'].values
                 timestamps   = ground_truth_window['timestamp'].values
 
@@ -150,10 +118,9 @@ def rolling_window_forecast(sequences, pipeline, context_length, prediction_leng
                 all_timestamps.append(timestamps)
                 all_sequence_ids.append(seq_idx)
 
-                # Quantile forecasts — column name is str(quantile_level)
                 for q in QUANTILE_LEVELS:
                     col = str(q)
-                    all_quantiles[col].append(rows[col].values)   # (prediction_length,)
+                    all_quantiles[col].append(rows[col].values)
 
             except Exception as e:
                 if verbose:
@@ -167,9 +134,6 @@ def calculate_metrics(all_predictions, all_quantiles, all_ground_truth, horizon_
     """
     Calculate point metrics (RMSE, MAE) and probabilistic metrics
     (prediction interval coverage and width) for different horizons.
-
-    Probabilistic metrics use the 10th–90th percentile as the 80% PI
-    and the 25th–75th percentile as the 50% PI.
     """
     results = {}
 
@@ -177,31 +141,27 @@ def calculate_metrics(all_predictions, all_quantiles, all_ground_truth, horizon_
         rmse_values  = []
         mae_values   = []
 
-        # 80% PI  (Q10 – Q90)
         covered_80   = []
         width_80     = []
 
-        # 50% PI  (Q25 – Q75)
         covered_50   = []
         width_50     = []
 
         for idx, (pred, gt) in enumerate(zip(all_predictions, all_ground_truth)):
             if len(pred) >= horizon_step and len(gt) >= horizon_step:
-                step = horizon_step - 1          # 0-indexed
+                step = horizon_step - 1
                 pred_val = pred[step]
                 gt_val   = gt[step]
 
                 rmse_values.append((pred_val - gt_val) ** 2)
                 mae_values.append(abs(pred_val - gt_val))
 
-                # 80% PI
                 if '0.1' in all_quantiles and '0.9' in all_quantiles:
                     q10 = all_quantiles['0.1'][idx][step]
                     q90 = all_quantiles['0.9'][idx][step]
                     covered_80.append(int(q10 <= gt_val <= q90))
                     width_80.append(q90 - q10)
 
-                # 50% PI
                 if '0.25' in all_quantiles and '0.75' in all_quantiles:
                     q25 = all_quantiles['0.25'][idx][step]
                     q75 = all_quantiles['0.75'][idx][step]
@@ -288,12 +248,7 @@ def evaluate_single_patient(df, patient_name, pipeline, context_lengths,
 
 
 def aggregate_results_across_patients(all_patient_results, context_lengths):
-    """
-    Aggregate results across all patients.
-
-    Returns a DataFrame with average point and probabilistic metrics per
-    (context_length, horizon).
-    """
+    """Aggregate results across all patients."""
     horizons = ['15min', '30min', '60min', '90min']
 
     summary_data = []
@@ -435,6 +390,18 @@ def iter_datasets(args):
 
 def main(args):
 
+    if torch.cuda.is_available():
+        device = "cuda"
+    elif torch.backends.mps.is_available():
+        device = "mps"
+    else:
+        device = "cpu"
+
+    print(f"\nLoading fine-tuned (full-shot) Chronos-2 model from: {args.model_path}")
+    print(f"Device: {device}")
+
+    pipeline: Chronos2Pipeline = load_finetuned_chronos2_pipeline(args.model_path)
+
     context_lengths = [144]
 
     source = f"local ({args.data_dir})" if args.data_dir else f"HF split={args.split}"
@@ -503,6 +470,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
+        "--model_path",
+        type=str,
+        default="/content/drive/Shareddrives/Baiying/chronos-forecasting/chronos2_glucose_lora_more_steps_full_shot",
+        help="Path to the already fine-tuned (full-shot) Chronos-2 LoRA checkpoint."
+    )
+    parser.add_argument(
         "--data_dir", type=str, default=None,
         help="Path to root folder containing per-dataset subfolders of patient CSVs. "
              "If set, loads local CSVs instead of the HF dataset. "
@@ -519,7 +492,7 @@ if __name__ == "__main__":
     parser.add_argument("--prediction_length", type=int, default=18)
     parser.add_argument("--split",             type=str, default="test",
                         help="HF split (ignored when --data_dir is set).")
-    parser.add_argument("--output_dir",        type=str, default="./results",
+    parser.add_argument("--output_dir",        type=str, default="./results_fullshot",
                         help="Root folder for all saved results.")
 
     args = parser.parse_args()

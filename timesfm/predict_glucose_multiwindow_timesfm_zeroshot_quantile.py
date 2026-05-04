@@ -43,12 +43,16 @@ torch.set_default_device(DEVICE)
 
 LOGGER = logging.getLogger(__name__)
 
-# Default quantile levels output by TimesFM when use_continuous_quantile_head=True.
-# Index mapping: 0→0.1, 1→0.2, 2→0.3, 3→0.4, 4→0.5, 5→0.6, 6→0.7, 7→0.8, 8→0.9
-Q10_IDX = 0   # lower bound of PI80
-Q20_IDX = 1   # lower bound of PI60 (closest to Q25)
-Q80_IDX = 7   # upper bound of PI60 (closest to Q75)
-Q90_IDX = 8   # upper bound of PI80
+# TimesFM 2.5 continuous-quantile-head output is (batch, horizon, q=10).
+# Slot 5 is the median / AR point forecast; slots 1..9 correspond to quantile
+# levels [0.1, 0.2, ..., 0.9] (i.e. slot i ↔ quantiles[i-1]). Slot 0 is a
+# legacy point-head output and is NOT a quantile.
+# Values returned by model.forecast(...) are already in original (mg/dL) space
+# when ForecastConfig.normalize_inputs=True — do not re-apply mu/sigma.
+Q10_IDX = 1   # lower bound of PI80
+Q20_IDX = 2   # lower bound of PI60 (closest to Q25)
+Q80_IDX = 8   # upper bound of PI60 (closest to Q75)
+Q90_IDX = 9   # upper bound of PI80
 
 
 def _find_column(columns: Iterable[str], candidates: Iterable[str]) -> Optional[str]:
@@ -280,12 +284,11 @@ def evaluate_subject(
     batch_histories: List[np.ndarray] = []
     batch_targets: List[np.ndarray] = []
     batch_starts: List[int] = []
-    batch_norms: List[Tuple[float, float]] = []   # (mu, sigma) per window
 
     def flush_batch() -> None:
         nonlocal total_sse, total_ae, total_points, total_windows
         nonlocal pi80_covered_sum, pi80_width_sum, pi60_covered_sum, pi60_width_sum, pi_count
-        nonlocal batch_histories, batch_targets, batch_starts, batch_norms
+        nonlocal batch_histories, batch_targets, batch_starts
         if not batch_histories:
             return
         try:
@@ -299,17 +302,15 @@ def evaluate_subject(
             batch_histories = []
             batch_targets = []
             batch_starts = []
-            batch_norms = []
             return
 
         preds = np.asarray(preds, dtype="float32")
-        # quantile_preds shape: (batch, horizon, num_quantiles) — in normalized space
+        # quantile_preds shape: (batch, horizon, num_quantiles) — already in mg/dL
+        # (revin is applied inside model.forecast when normalize_inputs=True).
         quantile_preds = np.asarray(quantile_preds, dtype="float32")
 
         for i, (pred_vec, target_vals) in enumerate(zip(preds, batch_targets)):
-            mu, sigma = batch_norms[i]
-            # Denormalize quantile predictions back to mg/dL
-            q_vec = quantile_preds[i] * sigma + mu  # (horizon_steps, num_quantiles)
+            q_vec = quantile_preds[i]  # (horizon_steps, num_quantiles) mg/dL
 
             if metric_mode == "final":
                 step = cfg.horizon_steps - 1
@@ -364,7 +365,6 @@ def evaluate_subject(
         batch_histories = []
         batch_targets = []
         batch_starts = []
-        batch_norms = []
 
     for start in range(0, len(df) - cfg.context_steps - cfg.horizon_steps + 1, stride_steps):
         if int(contiguous_runs[start]) < required_gaps:
@@ -377,13 +377,9 @@ def evaluate_subject(
         if np.isnan(history_values).any() or np.isnan(target_values).any():
             continue
 
-        mu    = float(np.mean(history_values))
-        sigma = float(np.std(history_values)) or 1.0
-
         batch_histories.append(history_values)
         batch_targets.append(target_values)
         batch_starts.append(start)
-        batch_norms.append((mu, sigma))
         if len(batch_histories) >= batch_size:
             flush_batch()
 
@@ -605,8 +601,6 @@ def main() -> None:
                         history = df["value"].iloc[start:end].to_numpy(dtype="float32")
                         if np.isnan(history).any():
                             continue
-                        mu    = float(np.mean(history))
-                        sigma = float(np.std(history)) or 1.0
                         try:
                             with torch.inference_mode():
                                 preds, quantile_preds = model.forecast(
@@ -614,8 +608,9 @@ def main() -> None:
                                     inputs=[history],
                                 )
                             preds = np.asarray(preds, dtype="float32")[0]
-                            # Denormalize quantile predictions from normalized space to mg/dL
-                            quantile_preds = np.asarray(quantile_preds, dtype="float32")[0] * sigma + mu
+                            # quantile_preds already in mg/dL (revin applied inside forecast
+                            # when normalize_inputs=True).
+                            quantile_preds = np.asarray(quantile_preds, dtype="float32")[0]
                         except Exception as exc:
                             LOGGER.warning("%s: latest prediction failure (%s)", participant_id, exc)
                             continue
