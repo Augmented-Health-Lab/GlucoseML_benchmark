@@ -380,7 +380,7 @@ def iter_datasets(args):
         for name in args.dataset:
             yield name, load_local_dataset(args.data_dir, name)
     else:
-        ds = load_dataset("byluuu/gluco-tsfm-benchmark")
+        ds = load_dataset("glucofmbench/GlucoFM-Bench")
         split = args.split
         names = args.dataset if args.dataset else sorted(set(ds[split]["dataset"]))
         for name in names:
@@ -472,7 +472,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_path",
         type=str,
-        default="/content/drive/Shareddrives/Baiying/chronos-forecasting/chronos2_glucose_lora_more_steps_few_shot",
+        default="./chronos2_glucose_lora_more_steps_few_shot",
         help="Path to the already fine-tuned (few-shot) Chronos-2 LoRA checkpoint."
     )
     parser.add_argument(

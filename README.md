@@ -6,7 +6,7 @@
 
 This benchmark uses the **GlucoFM Dataset** available on HuggingFace:
 
-🔗 **[byluuu/gluco-tsfm-benchmark](https://huggingface.co/datasets/byluuu/gluco-tsfm-benchmark)**
+🔗 **[glucofmbench/GlucoFM-Bench](https://huggingface.co/datasets/glucofmbench/GlucoFM-Bench)**
 
 The dataset includes continuous glucose monitoring (CGM) data from multiple public datasets with 80/20 train/test split. Each sample contains:
 - `dataset`: Source dataset name
@@ -83,7 +83,7 @@ GlucoseML_benchmark/
 ### 1. Clone the Repository
 
 ```bash
-git clone git@github.com:Augmented-Health-Lab/GlucoseML_benchmark.git
+git clone git@github.com:Anonymous/GlucoseML_benchmark.git # The current repo
 cd GlucoseML_benchmark
 ```
 
@@ -104,10 +104,10 @@ Option 1 (recommended): prepare from the HuggingFace dataset into a local CSV ca
 pip install datasets
 
 # Basic preparation
-python prepare_dataset.py --hf-name byluuu/gluco-tsfm-benchmark --output-dir ./hf_cache
+python prepare_dataset.py --hf-name glucofmbench/GlucoFM-Bench --output-dir ./hf_cache
 
 # With mixed dataset (combines all subdatasets)
-python prepare_dataset.py --hf-name byluuu/gluco-tsfm-benchmark --output-dir ./hf_cache --create-mixed
+python prepare_dataset.py --hf-name glucofmbench/GlucoFM-Bench --output-dir ./hf_cache --create-mixed
 ```
 
 This will create (when `--create-mixed` is used):
@@ -246,19 +246,6 @@ Contributions are welcome! To add a new model:
 5. Add results to `paper_tables_ctx12h_hor30m/`
 
 ## 📝 Citation
-
-If you use this benchmark in your research, please cite:
-
-```bibtex
-@article{glucofm_benchmark2024,
-  title={GlucoFM-Bench: Benchmarking Time-Series Foundation Models for Blood Glucose Forecasting},
-  author={Lu, Baiying and Liang, Zhaohui and Pontius, Ryan and Tang, Shengpu and Prioleau, Temiloluwa},
-  journal={Under submission},
-  year={2026}
-}
-```
-
-### Individual Model Citations
 
 **Martinsson LSTM:**
 ```bibtex

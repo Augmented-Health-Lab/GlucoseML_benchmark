@@ -3,7 +3,7 @@
 Run zero-shot, few-shot, and full-shot Chronos-2 on the HuggingFace CGM benchmark dataset.
 
 Dataset used:
-byluuu/gluco-tsfm-benchmark
+glucofmbench/GlucoFM-Bench
 
 ---
 

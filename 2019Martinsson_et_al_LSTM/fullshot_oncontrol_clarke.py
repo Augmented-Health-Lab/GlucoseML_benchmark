@@ -395,7 +395,7 @@ def main():
     )
     parser.add_argument(
         "--base_root",
-        default="/content/drive/Shareddrives/Baiying/2019Martinsson_et_al_LSTM/glucofm_fullshot_open_144",
+        default="./glucofm_fullshot_open_144",
         help="Root containing the full_shot_open_dataset_eval_<horizon>_<dataset> folders.",
     )
     args = parser.parse_args()

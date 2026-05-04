@@ -32,12 +32,12 @@ Use the provided script to download and organize the dataset:
 ```bash
 # Basic preparation
 python prepare_dataset.py \
-    --hf_name byluuu/gluco-tsfm-benchmark \
+    --hf_name glucofmbench/GlucoFM-Bench \
     --output_dir ./hf_cache
 
 # With mixed dataset (combines all subdatasets)
 python prepare_dataset.py \
-    --hf_name byluuu/gluco-tsfm-benchmark \
+    --hf_name glucofmbench/GlucoFM-Bench \
     --output_dir ./hf_cache \
     --create_mixed
 ```

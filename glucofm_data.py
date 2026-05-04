@@ -5,7 +5,7 @@ from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple
 import numpy as np
 import pandas as pd
 
-DEFAULT_HF_NAME = "byluuu/gluco-tsfm-benchmark"
+DEFAULT_HF_NAME = "glucofmbench/GlucoFM-Bench"
 
 
 def _require_datasets():  # pragma: no cover

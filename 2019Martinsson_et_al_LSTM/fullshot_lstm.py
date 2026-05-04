@@ -34,7 +34,7 @@ def export_hf_to_csv(
     compatible with glucofm_bench.py
     """
     ds = hf_datasets.load_dataset(
-        "byluuu/gluco-tsfm-benchmark",
+        "glucofmbench/GlucoFM-Bench",
         split="train"
     )
 
@@ -453,13 +453,13 @@ def run_evaluation_from_yaml_folder(yaml_dir):
 
 def main():
     export_hf_to_csv(
-    hf_name="byluuu/gluco-tsfm-benchmark",
+    hf_name="glucofmbench/GlucoFM-Bench",
     split="train",
     out_root="./hf_cache",
     )
 
     export_hf_to_csv(
-        hf_name="byluuu/gluco-tsfm-benchmark",
+        hf_name="glucofmbench/GlucoFM-Bench",
         split="test",
         out_root="./hf_cache",
     )
@@ -473,7 +473,7 @@ def main():
 
     # 1) Generate eval YAMLs (per subject), dataset_dir must be absolute path!!!
     eval_dir = generate_yaml_configs(
-        dataset_dir="/Users/baiyinglu/Desktop/AugmentedHealthLab/GlucoseML_benchmark/2019Martinsson_et_al_LSTM/hf_cache/test/mixed",
+        dataset_dir="./hf_cache/test/mixed",
         base_yaml_root=base_root,
         nb_past_steps=nb_past_steps,
         param_nb_future_steps=[horizon],
@@ -484,7 +484,7 @@ def main():
     # 2) Generate one train YAML (all data), dataset_dir must be absolute path!!!
     train_yaml = generate_fullshot_train_yaml(
         output_root=base_root,
-        training_data_path="/Users/baiyinglu/Desktop/AugmentedHealthLab/GlucoseML_benchmark/2019Martinsson_et_al_LSTM/hf_cache/train/mixed/all",
+        training_data_path="./hf_cache/train/mixed/all",
         nb_past_steps=nb_past_steps,
         param_nb_future_steps=[horizon],
     )

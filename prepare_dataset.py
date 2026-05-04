@@ -112,8 +112,8 @@ def main() -> None:
         "--hf_name",
         "--hf-name",
         type=str,
-        default="byluuu/gluco-tsfm-benchmark",
-        help="HuggingFace dataset name (default: byluuu/gluco-tsfm-benchmark).",
+        default="glucofmbench/GlucoFM-Bench",
+        help="HuggingFace dataset name (default: glucofmbench/GlucoFM-Bench).",
     )
     parser.add_argument(
         "--output_dir",

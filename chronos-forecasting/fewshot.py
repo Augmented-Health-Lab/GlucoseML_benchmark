@@ -306,7 +306,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--dataset", type=str,
-                        default="byluuu/gluco-tsfm-benchmark")
+                        default="glucofmbench/GlucoFM-Bench")
 
     parser.add_argument("--train_split", type=str, default="train")
     parser.add_argument("--test_split", type=str, default="test")

@@ -64,7 +64,7 @@ pip install -r requirements.txt
 - **Automated Workflows**: Single script handles training, evaluation, and result saving
 
 ### Dataset Support
-- **HuggingFace**: `byluuu/gluco-tsfm-benchmark` with 80/20 train/test split
+- **HuggingFace**: `glucofmbench/GlucoFM-Bench` with 80/20 train/test split
 - **Local CSV**: Custom glucose monitoring datasets with timestamp and BGvalue columns
 - **Original Datasets**: OhioT1DM, DiaTrend, T1DEXI from Martinsson et al
 
@@ -82,7 +82,7 @@ Similar to fullshot, you can switch between HuggingFace and local modes by editi
 Both scripts support:
 - **Context lengths**: `nb_past_steps` (default: 144 timesteps = 12 hours)
 - **Prediction horizons**: `param_nb_future_steps` (e.g., [3, 6, 12, 18] for 15min, 30min, 60min, 90min)
-- **HuggingFace dataset**: `hf_dataset="byluuu/gluco-tsfm-benchmark"`
+- **HuggingFace dataset**: `hf_dataset="glucofmbench/GlucoFM-Bench"`
 - **Dataset filtering**: `filter_dataset="BIG_IDEA_LAB"` (for specific dataset evaluation)
 
 Results are saved in:

@@ -315,7 +315,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--dataset", type=str, default="byluuu/gluco-tsfm-benchmark")
+    parser.add_argument("--dataset", type=str, default="glucofmbench/GlucoFM-Bench")
     parser.add_argument("--context_length", type=int, default=144)
     parser.add_argument("--train_stride", type=int, default=12)
 

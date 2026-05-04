@@ -425,7 +425,7 @@ def iter_datasets(args):
         for name in args.dataset:
             yield name, load_local_dataset(args.data_dir, name)
     else:
-        ds = load_dataset("byluuu/gluco-tsfm-benchmark")
+        ds = load_dataset("glucofmbench/GlucoFM-Bench")
         split = args.split
         names = args.dataset if args.dataset else sorted(set(ds[split]["dataset"]))
         for name in names:

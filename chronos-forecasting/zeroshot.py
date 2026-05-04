@@ -325,7 +325,7 @@ def save_detailed_results(all_patient_results, context_lengths, output_dir='./re
 
 def main(args):
 
-    ds = load_dataset("byluuu/gluco-tsfm-benchmark")   # change to yours
+    ds = load_dataset("glucofmbench/GlucoFM-Bench")   # change to yours
     split = args.split
 
     context_lengths = [12, 48, 96, 144, 192, 288]

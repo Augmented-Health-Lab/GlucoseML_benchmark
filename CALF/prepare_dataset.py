@@ -103,7 +103,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="Prepare CALF glucose dataset")
-    parser.add_argument("--hf_name", type=str, default="byluuu/gluco-tsfm-benchmark",
+    parser.add_argument("--hf_name", type=str, default="glucofmbench/GlucoFM-Bench",
                         help="HuggingFace dataset name")
     parser.add_argument("--output_dir", type=str, default="./hf_cache",
                         help="Output directory for CSV files")

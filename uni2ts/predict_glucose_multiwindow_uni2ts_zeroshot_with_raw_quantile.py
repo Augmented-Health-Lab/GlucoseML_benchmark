@@ -22,7 +22,7 @@ except ModuleNotFoundError:  # pragma: no cover
 
 # ── Inlined from glucofm_data.py ───────────────────────────────────────────
 
-DEFAULT_HF_NAME = "byluuu/gluco-tsfm-benchmark"
+DEFAULT_HF_NAME = "glucofmbench/GlucoFM-Bench"
 
 
 def _require_datasets():

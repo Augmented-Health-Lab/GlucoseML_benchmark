@@ -372,13 +372,13 @@ def run_evaluation_from_yaml_folder(yaml_dir):
 # ============================================================
 
 def main():
-    base_root = "/content/drive/Shareddrives/Baiying/2019Martinsson_et_al_LSTM/glucofm_fullshot_open_144"
+    base_root = "./glucofm_fullshot_open_144"
     nb_past_steps = 144
     horizon = 18
     dataset_tag = "mix"
 
     eval_dir_ohio = generate_yaml_configs(
-        dataset_dir="/content/drive/Shareddrives/Baiying/preprocessed_dataset/test_dataset/controlled_datasets/OhioT1DM",
+        dataset_dir="./preprocessed_dataset/test_dataset/controlled_datasets/OhioT1DM",
         base_yaml_root=base_root,
         nb_past_steps=nb_past_steps,
         param_nb_future_steps=[horizon],
@@ -388,7 +388,7 @@ def main():
     run_evaluation_from_yaml_folder(eval_dir_ohio)
 
     eval_dir_diatrend = generate_yaml_configs(
-        dataset_dir="/content/drive/Shareddrives/Baiying/preprocessed_dataset/test_dataset/controlled_datasets/8_DiaTrend",
+        dataset_dir="./preprocessed_dataset/test_dataset/controlled_datasets/8_DiaTrend",
         base_yaml_root=base_root,
         nb_past_steps=nb_past_steps,
         param_nb_future_steps=[horizon],
@@ -398,7 +398,7 @@ def main():
     run_evaluation_from_yaml_folder(eval_dir_diatrend)
 
     eval_dir_t1dexi = generate_yaml_configs(
-        dataset_dir="/content/drive/Shareddrives/Baiying/preprocessed_dataset/test_dataset/controlled_datasets/5_T1DEXI",
+        dataset_dir="./preprocessed_dataset/test_dataset/controlled_datasets/5_T1DEXI",
         base_yaml_root=base_root,
         param_nb_future_steps=[horizon],
         dataset="t1dexi",
