@@ -48,7 +48,7 @@ DEFAULT_RESULTS_ROOT = Path(__file__).resolve().parent / "multi_horizon_results_
 DEFAULT_LOG_STEM = "predict_glucose_multiwindow_gpformer_fewshot"
 DEFAULT_SHOT_LABEL = "few-shot"
 DEFAULT_EVAL_STRIDE_STEPS = 1
-DEFAULT_TRAIN_EPOCHS = 10
+DEFAULT_TRAIN_EPOCHS = 30
 DEFAULT_TRAIN_STRIDE_STEPS = 240
 
 STEP_MINUTES = 5
@@ -61,7 +61,57 @@ HORIZONS_MINUTES = [15, 30, 60, 90]
 DEFAULT_EVAL_BATCH_SIZE = 8
 DEFAULT_TRAIN_BATCH_SIZE = 16
 
+DEFAULT_EARLY_STOPPING = True
+DEFAULT_PATIENCE = 10
+DEFAULT_MIN_DELTA = 0.0
+DEFAULT_VAL_FRACTION = 0.1
+
 LOGGER = logging.getLogger(__name__)
+
+
+class EarlyStopping:
+    """Track best val loss and signal training to stop after `patience` epochs without improvement."""
+
+    def __init__(self, patience: int = 3, min_delta: float = 0.0) -> None:
+        self.patience = int(patience)
+        self.min_delta = float(min_delta)
+        self.best_loss = float("inf")
+        self.epochs_no_improve = 0
+        self.best_state: Optional[Dict[str, torch.Tensor]] = None
+        self.early_stop = False
+
+    def step(self, val_loss: float, model: torch.nn.Module) -> bool:
+        improved = val_loss < self.best_loss - self.min_delta
+        if improved:
+            self.best_loss = float(val_loss)
+            self.epochs_no_improve = 0
+            self.best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+        else:
+            self.epochs_no_improve += 1
+            if self.epochs_no_improve >= self.patience:
+                self.early_stop = True
+        return improved
+
+    def restore(self, model: torch.nn.Module) -> None:
+        if self.best_state is not None:
+            model.load_state_dict(self.best_state)
+
+
+def split_train_val_index(
+    train_index: List[Tuple[str, int]],
+    val_fraction: float,
+    seed: int,
+) -> Tuple[List[Tuple[str, int]], List[Tuple[str, int]]]:
+    if val_fraction <= 0.0 or len(train_index) < 2:
+        return train_index, []
+    val_fraction = min(max(val_fraction, 0.0), 0.5)
+    rng = random.Random(seed)
+    shuffled = list(train_index)
+    rng.shuffle(shuffled)
+    n_val = max(1, int(round(len(shuffled) * val_fraction)))
+    val_idx = shuffled[:n_val]
+    train_idx = shuffled[n_val:]
+    return train_idx, val_idx
 
 # Torch may be installed in an environment where NumPy interop is unavailable
 # (e.g. torch built against NumPy 1.x running with NumPy 2.x). We still want the
@@ -476,6 +526,10 @@ def train_fullshot(
     train_loss_mode: str,
     label_len: int,
     log_every: int,
+    early_stopping: bool = DEFAULT_EARLY_STOPPING,
+    patience: int = DEFAULT_PATIENCE,
+    min_delta: float = DEFAULT_MIN_DELTA,
+    val_fraction: float = DEFAULT_VAL_FRACTION,
 ) -> Tuple[torch.nn.Module, float, float, int]:
     if not train_series:
         raise ValueError("No training participants loaded.")
@@ -493,7 +547,7 @@ def train_fullshot(
     mean, std = fit_standard_scaler(train_series)
     LOGGER.info("Scaler (train): mean=%.4f std=%.4f", mean, std)
 
-    train_index = build_train_index(
+    full_index = build_train_index(
         series=train_series,
         context_steps=cfg.context_steps,
         horizon_steps=cfg.horizon_steps,
@@ -501,8 +555,22 @@ def train_fullshot(
         max_windows=max_train_windows,
         seed=seed,
     )
-    if not train_index:
+    if not full_index:
         raise ValueError("No valid training windows found for this config.")
+
+    use_es = bool(early_stopping) and val_fraction > 0.0
+    if use_es:
+        train_index, val_index = split_train_val_index(full_index, val_fraction, seed)
+        if len(val_index) < train_batch_size:
+            LOGGER.warning(
+                "val set too small (%d < batch_size=%d); disabling early stopping for this run.",
+                len(val_index),
+                train_batch_size,
+            )
+            train_index, val_index = full_index, []
+            use_es = False
+    else:
+        train_index, val_index = full_index, []
 
     dataset = GPFormerWindowDataset(
         train_series,
@@ -523,6 +591,26 @@ def train_fullshot(
         train_epochs,
         str(max_train_steps),
     )
+
+    val_loader: Optional[DataLoader] = None
+    if use_es:
+        val_dataset = GPFormerWindowDataset(
+            train_series,
+            val_index,
+            context_steps=cfg.context_steps,
+            horizon_steps=cfg.horizon_steps,
+            label_len=label_len,
+            mean=mean,
+            std=std,
+        )
+        val_loader = DataLoader(val_dataset, batch_size=train_batch_size, shuffle=False, drop_last=False)
+        LOGGER.info(
+            "early stopping enabled: train_windows=%d val_windows=%d patience=%d min_delta=%.6f",
+            len(train_index),
+            len(val_index),
+            patience,
+            min_delta,
+        )
 
     # Minimal config object expected by GPFormer.Model
     model_cfg = SimpleNamespace(
@@ -546,6 +634,29 @@ def train_fullshot(
     model = GPFormer.Model(model_cfg).float().to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     loss_fn = torch.nn.MSELoss()
+
+    es = EarlyStopping(patience=patience, min_delta=min_delta) if use_es else None
+
+    def _compute_val_loss() -> float:
+        assert val_loader is not None
+        model.eval()
+        total_loss = 0.0
+        n_batches = 0
+        with torch.no_grad():
+            for v_batch in val_loader:
+                v_xe, v_xme, v_xd, v_xmd, v_y = v_batch
+                v_xe = v_xe.to(device)
+                v_xme = v_xme.to(device)
+                v_xd = v_xd.to(device)
+                v_xmd = v_xmd.to(device)
+                v_y = v_y.to(device)
+                v_pred = model(v_xe, v_xme, v_xd, v_xmd)
+                if train_loss_mode == "final":
+                    v_pred = v_pred[:, -1:, :]
+                    v_y = v_y[:, -1:, :]
+                total_loss += float(loss_fn(v_pred, v_y).detach().cpu())
+                n_batches += 1
+        return total_loss / max(1, n_batches)
 
     total_steps = 0
     for epoch in range(train_epochs):
@@ -583,8 +694,28 @@ def train_fullshot(
                     len(train_index),
                 )
 
+        if es is not None:
+            val_loss = _compute_val_loss()
+            improved = es.step(val_loss, model)
+            LOGGER.info(
+                "epoch=%d/%d val_loss=%.6f best=%.6f no_improve=%d %s",
+                epoch + 1,
+                train_epochs,
+                val_loss,
+                es.best_loss,
+                es.epochs_no_improve,
+                "(improved)" if improved else "",
+            )
+            if es.early_stop:
+                LOGGER.info("Early stopping triggered at epoch %d (patience=%d).", epoch + 1, patience)
+                break
+
         if max_train_steps is not None and total_steps >= max_train_steps:
             break
+
+    if es is not None:
+        es.restore(model)
+        LOGGER.info("Restored best model state (val_loss=%.6f).", es.best_loss)
 
     model.eval()
     LOGGER.info("train done: total_steps=%d", total_steps)
@@ -927,6 +1058,38 @@ def parse_args(
     parser.add_argument("--dropout", type=float, default=0.05)
 
     parser.add_argument("--log-every", type=int, default=50)
+
+    parser.add_argument(
+        "--early-stopping",
+        dest="early_stopping",
+        action="store_true",
+        default=DEFAULT_EARLY_STOPPING,
+        help="Enable early stopping on a held-out validation split (default: enabled).",
+    )
+    parser.add_argument(
+        "--no-early-stopping",
+        dest="early_stopping",
+        action="store_false",
+        help="Disable early stopping.",
+    )
+    parser.add_argument(
+        "--patience",
+        type=int,
+        default=DEFAULT_PATIENCE,
+        help=f"Early stopping patience in epochs (default: {DEFAULT_PATIENCE}).",
+    )
+    parser.add_argument(
+        "--min-delta",
+        type=float,
+        default=DEFAULT_MIN_DELTA,
+        help=f"Minimum val-loss improvement to reset patience (default: {DEFAULT_MIN_DELTA}).",
+    )
+    parser.add_argument(
+        "--val-fraction",
+        type=float,
+        default=DEFAULT_VAL_FRACTION,
+        help=f"Fraction of training windows held out for validation (default: {DEFAULT_VAL_FRACTION}).",
+    )
     return parser.parse_args(argv)
 
 
@@ -1186,6 +1349,10 @@ def main(
             train_loss_mode=args.train_loss_mode,
             label_len=label_len,
             log_every=args.log_every,
+            early_stopping=args.early_stopping,
+            patience=args.patience,
+            min_delta=args.min_delta,
+            val_fraction=args.val_fraction,
         )
 
         if args.save_trained_model:

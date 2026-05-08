@@ -54,10 +54,60 @@ DEFAULT_EVAL_BATCH_SIZE = 8
 DEFAULT_TRAIN_BATCH_SIZE = 16
 
 DEFAULT_EVAL_STRIDE_STEPS = 1
-DEFAULT_TRAIN_EPOCHS = 10
+DEFAULT_TRAIN_EPOCHS = 30
 DEFAULT_TRAIN_STRIDE_STEPS = 10
 
+DEFAULT_EARLY_STOPPING = True
+DEFAULT_PATIENCE = 10
+DEFAULT_MIN_DELTA = 0.0
+DEFAULT_VAL_FRACTION = 0.1
+
 LOGGER = logging.getLogger(__name__)
+
+
+class EarlyStopping:
+    """Track best val loss and signal training to stop after `patience` epochs without improvement."""
+
+    def __init__(self, patience: int = 3, min_delta: float = 0.0) -> None:
+        self.patience = int(patience)
+        self.min_delta = float(min_delta)
+        self.best_loss = float("inf")
+        self.epochs_no_improve = 0
+        self.best_state: Optional[Dict[str, torch.Tensor]] = None
+        self.early_stop = False
+
+    def step(self, val_loss: float, model: torch.nn.Module) -> bool:
+        improved = val_loss < self.best_loss - self.min_delta
+        if improved:
+            self.best_loss = float(val_loss)
+            self.epochs_no_improve = 0
+            self.best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+        else:
+            self.epochs_no_improve += 1
+            if self.epochs_no_improve >= self.patience:
+                self.early_stop = True
+        return improved
+
+    def restore(self, model: torch.nn.Module) -> None:
+        if self.best_state is not None:
+            model.load_state_dict(self.best_state)
+
+
+def split_train_val_index(
+    train_index: List[Tuple[str, int]],
+    val_fraction: float,
+    seed: int,
+) -> Tuple[List[Tuple[str, int]], List[Tuple[str, int]]]:
+    if val_fraction <= 0.0 or len(train_index) < 2:
+        return train_index, []
+    val_fraction = min(max(val_fraction, 0.0), 0.5)
+    rng = random.Random(seed)
+    shuffled = list(train_index)
+    rng.shuffle(shuffled)
+    n_val = max(1, int(round(len(shuffled) * val_fraction)))
+    val_idx = shuffled[:n_val]
+    train_idx = shuffled[n_val:]
+    return train_idx, val_idx
 
 
 def _find_column(columns: Iterable[str], candidates: Iterable[str]) -> Optional[str]:
@@ -509,6 +559,10 @@ def finetune_fullshot(
     loss_mode: str,
     log_every: int,
     eval_batch_size: int,
+    early_stopping: bool = DEFAULT_EARLY_STOPPING,
+    patience: int = DEFAULT_PATIENCE,
+    min_delta: float = DEFAULT_MIN_DELTA,
+    val_fraction: float = DEFAULT_VAL_FRACTION,
 ) -> timesfm.TimesFM_2p5_200M_torch:
     if not train_series:
         raise ValueError("No training participants loaded.")
@@ -549,7 +603,7 @@ def finetune_fullshot(
         )
     )
 
-    train_index = build_train_index(
+    full_index = build_train_index(
         series=train_series,
         context_steps=cfg.context_steps,
         horizon_steps=cfg.horizon_steps,
@@ -557,8 +611,22 @@ def finetune_fullshot(
         max_windows=max_train_windows,
         seed=seed,
     )
-    if not train_index:
+    if not full_index:
         raise ValueError("No valid training windows found for this config.")
+
+    use_es = bool(early_stopping) and val_fraction > 0.0
+    if use_es:
+        train_index, val_index = split_train_val_index(full_index, val_fraction, seed)
+        if len(val_index) < train_batch_size:
+            LOGGER.warning(
+                "val set too small (%d < batch_size=%d); disabling early stopping for this run.",
+                len(val_index),
+                train_batch_size,
+            )
+            train_index, val_index = full_index, []
+            use_es = False
+    else:
+        train_index, val_index = full_index, []
 
     dataset = WindowDataset(
         train_series,
@@ -568,14 +636,60 @@ def finetune_fullshot(
     )
     loader = DataLoader(dataset, batch_size=train_batch_size, shuffle=True, drop_last=True)
 
+    val_loader: Optional[DataLoader] = None
+    if use_es:
+        val_dataset = WindowDataset(
+            train_series,
+            val_index,
+            context_steps=cfg.context_steps,
+            horizon_steps=cfg.horizon_steps,
+        )
+        val_loader = DataLoader(val_dataset, batch_size=train_batch_size, shuffle=False, drop_last=False)
+        LOGGER.info(
+            "early stopping enabled: train_windows=%d val_windows=%d patience=%d min_delta=%.6f",
+            len(train_index),
+            len(val_index),
+            patience,
+            min_delta,
+        )
+
     module.train()
     trainable_params = [p for p in module.parameters() if p.requires_grad]
     if not trainable_params:
         raise ValueError("No trainable parameters.")
     optimizer = torch.optim.AdamW(trainable_params, lr=lr, weight_decay=weight_decay)
 
+    es = EarlyStopping(patience=patience, min_delta=min_delta) if use_es else None
+
+    def _compute_val_loss() -> float:
+        assert val_loader is not None
+        module.eval()
+        total_loss = 0.0
+        n_batches = 0
+        with torch.no_grad():
+            for v_past, v_future in val_loader:
+                v_past = v_past.to(device).to(torch.float32)
+                v_future = v_future.to(device).to(torch.float32)
+                v_preds = timesfm_point_forecast_train(
+                    module=module,
+                    history=v_past,
+                    horizon_steps=cfg.horizon_steps,
+                    max_context=max_context,
+                    normalize_inputs=True,
+                    force_flip_invariance=True,
+                    infer_is_positive=True,
+                )
+                if loss_mode == "final":
+                    v_preds = v_preds[:, -1:]
+                    v_future = v_future[:, -1:]
+                total_loss += float(torch.mean((v_preds - v_future) ** 2).detach().cpu())
+                n_batches += 1
+        module.train()
+        return total_loss / max(1, n_batches)
+
     total_steps = 0
     for epoch in range(train_epochs):
+        module.train()
         for past, future in loader:
             if max_train_steps is not None and total_steps >= max_train_steps:
                 break
@@ -612,8 +726,28 @@ def finetune_fullshot(
                     len(train_index),
                 )
 
+        if es is not None:
+            val_loss = _compute_val_loss()
+            improved = es.step(val_loss, module)
+            LOGGER.info(
+                "epoch=%d/%d val_loss=%.6f best=%.6f no_improve=%d %s",
+                epoch + 1,
+                train_epochs,
+                val_loss,
+                es.best_loss,
+                es.epochs_no_improve,
+                "(improved)" if improved else "",
+            )
+            if es.early_stop:
+                LOGGER.info("Early stopping triggered at epoch %d (patience=%d).", epoch + 1, patience)
+                break
+
         if max_train_steps is not None and total_steps >= max_train_steps:
             break
+
+    if es is not None:
+        es.restore(module)
+        LOGGER.info("Restored best model state (val_loss=%.6f).", es.best_loss)
 
     module.eval()
     LOGGER.info("finetune done: total_steps=%d", total_steps)
@@ -717,6 +851,38 @@ def parse_args(
         help="Optimize loss on final horizon point or all horizon points.",
     )
     parser.add_argument("--log-every", type=int, default=50)
+
+    parser.add_argument(
+        "--early-stopping",
+        dest="early_stopping",
+        action="store_true",
+        default=DEFAULT_EARLY_STOPPING,
+        help="Enable early stopping on a held-out validation split (default: enabled).",
+    )
+    parser.add_argument(
+        "--no-early-stopping",
+        dest="early_stopping",
+        action="store_false",
+        help="Disable early stopping.",
+    )
+    parser.add_argument(
+        "--patience",
+        type=int,
+        default=DEFAULT_PATIENCE,
+        help=f"Early stopping patience in epochs (default: {DEFAULT_PATIENCE}).",
+    )
+    parser.add_argument(
+        "--min-delta",
+        type=float,
+        default=DEFAULT_MIN_DELTA,
+        help=f"Minimum val-loss improvement to reset patience (default: {DEFAULT_MIN_DELTA}).",
+    )
+    parser.add_argument(
+        "--val-fraction",
+        type=float,
+        default=DEFAULT_VAL_FRACTION,
+        help=f"Fraction of training windows held out for validation (default: {DEFAULT_VAL_FRACTION}).",
+    )
     return parser.parse_args(argv)
 
 
@@ -971,6 +1137,10 @@ def main(
                 loss_mode=args.train_loss_mode,
                 log_every=args.log_every,
                 eval_batch_size=args.eval_batch_size,
+                early_stopping=args.early_stopping,
+                patience=args.patience,
+                min_delta=args.min_delta,
+                val_fraction=args.val_fraction,
             )
         except Exception as exc:
             LOGGER.warning("Finetune failed ctx=%dh hor=%dm (%s)", cfg.context_hours, cfg.horizon_minutes, exc)

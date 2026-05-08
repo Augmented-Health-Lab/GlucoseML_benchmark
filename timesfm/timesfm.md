@@ -53,17 +53,25 @@ python timesfm/predict_glucose_multiwindow_timesfm_fullshot.py --data-root-train
 python timesfm/predict_glucose_multiwindow_timesfm_fewshot.py --data-root-train hf_cache/train/mixed --data-root-test hf_cache/test
 ```
 
+> To save per-window forecast outputs (raw predictions / quantiles for plotting or downstream analysis), use the `*_with_raw.py` or `*_with_raw_quantile.py` variant of the same script (`zeroshot` / `fullshot` / `fewshot`).
+
 ### Defaults (Full-shot / Few-shot)
 
 Full-shot defaults:
 - `--context-hours`: `12`
 - `--horizons-minutes`: `30`
 - `--eval-stride-steps`: `1`
-- `--train-epochs`: `10`
-- `--train-stride-steps`: `10`
+- `--train-epochs`: `30`
+- `--train-stride-steps`: `12`
 
 Few-shot defaults:
-- same as full-shot, except `--train-stride-steps`: `240`
+- same as few-shot, except `--train-stride-steps`: `240`
+
+Early stopping defaults (enabled by default):
+- `--patience`: `10`
+- `--min-delta`: `0.0`
+- `--val-fraction`: `0.1`
+- `--no-early-stopping`: disable and run for the full `--train-epochs`
 
 ## Outputs
 

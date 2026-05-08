@@ -45,17 +45,24 @@ python GPFormer/predict_glucose_multiwindow_gpformer_fullshot.py --data-root-tra
 python GPFormer/predict_glucose_multiwindow_gpformer_fewshot.py --data-root-train hf_cache/train/mixed --data-root-test hf_cache/test
 ```
 
+> To save per-window forecast outputs (raw predictions for plotting or downstream analysis), use the `*_raw.py` variants in the same folder for full-shot / few-shot.
+
 ### Defaults
 
 - Shared:
   - `--context-hours`: `12`
   - `--horizons-minutes`: `30`
   - `--eval-stride-steps`: `1`
-  - `--train-epochs`: `10`
+  - `--train-epochs`: `30`
 - Full-shot:
   - `--train-stride-steps`: `12`
 - Few-shot:
   - `--train-stride-steps`: `240`
+- Early stopping (enabled by default):
+  - `--patience`: `10`
+  - `--min-delta`: `0.0`
+  - `--val-fraction`: `0.1`
+  - `--no-early-stopping`: disable and run for the full `--train-epochs`
 
 ### Common Optional Args
 
@@ -63,6 +70,7 @@ python GPFormer/predict_glucose_multiwindow_gpformer_fewshot.py --data-root-trai
 - `--context-hours ...` / `--horizons-minutes ...`: select context windows / prediction horizons
 - `--eval-stride-steps N`: evaluation sliding-window stride (`0` means `context_steps`; `1` means 5 minutes)
 - training: `--train-epochs` / `--train-batch-size` / `--train-stride-steps` / `--max-train-windows` / `--max-train-steps`
+- early stopping: `--patience` / `--min-delta` / `--val-fraction` / `--no-early-stopping` (10% of training windows held out as a val split; restores best weights on stop)
 
 ## Outputs
 

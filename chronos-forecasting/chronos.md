@@ -53,6 +53,8 @@ python fullshot.py \
   --learning_rate 1e-5
 ```
 
+> To save per-window forecast outputs (raw predictions for plotting or downstream analysis like CEG / SEG), use the `*_with_raw.py` variant of the same script (`zeroshot` / `fullshot` / `fewshot`). It writes a `*_raw_predictions.csv` (one row per `(Patient, Context_Length, Horizon, Window_Idx)` with `Prediction` + `GroundTruth`).
+
 ## 5. Output
 Saved to:
 ```css

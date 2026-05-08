@@ -130,6 +130,8 @@ python run_main.py \
   --des GlucoseTrain
 ```
 
+> To save per-window forecast outputs (raw predictions for plotting or downstream analysis like CEG / SEG), swap `run_main.py` for `run_main_with_raw.py` (same args). It writes one `raw_predictions_{h}min.csv` per horizon under the checkpoint's `test_metrics/` folder.
+
 ### Evaluate Specific Dataset
 
 To evaluate on a specific dataset (e.g., BIG_IDEA_LAB):
