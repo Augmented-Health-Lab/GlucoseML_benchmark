@@ -18,6 +18,8 @@ uni2ts/multi_horizon_results_uni2ts_fewshot
 uni2ts/multi_horizon_results_uni2ts_fullshot
 uni2ts/multi_horizon_results_uni2ts_zeroshot
 
+TiRex-2/multi_horizon_results_tirex2_zeroshot
+
 GPFormer/multi_horizon_results_gpformer_fewshot
 GPFormer/multi_horizon_results_gpformer_fullshot
 
