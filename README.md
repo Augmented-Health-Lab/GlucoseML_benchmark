@@ -6,7 +6,7 @@
 
 This benchmark uses the **GlucoFM Dataset** available on HuggingFace:
 
-🔗 **[byluuu/gluco-tsfm-benchmark](https://huggingface.co/datasets/byluuu/gluco-tsfm-benchmark)**
+🔗 **[glucofmbench/GlucoFM-Bench](https://huggingface.co/datasets/glucofmbench/GlucoFM-Bench)**
 
 The dataset includes continuous glucose monitoring (CGM) data from multiple public datasets with 80/20 train/test split. Each sample contains:
 - `dataset`: Source dataset name
