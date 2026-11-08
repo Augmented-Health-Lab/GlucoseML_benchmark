@@ -250,11 +250,14 @@ Contributions are welcome! To add a new model:
 If you use this benchmark in your research, please cite:
 
 ```bibtex
-@article{glucofm_benchmark2024,
-  title={GlucoFM-Bench: Benchmarking Time-Series Foundation Models for Blood Glucose Forecasting},
-  author={Lu, Baiying and Liang, Zhaohui and Pontius, Ryan and Tang, Shengpu and Prioleau, Temiloluwa},
-  journal={Under submission},
-  year={2026}
+@misc{lu2026glucofmbenchbenchmarkingtimeseriesfoundation,
+      title={GlucoFM-Bench: Benchmarking Time-Series Foundation Models for Blood Glucose Forecasting}, 
+      author={Baiying Lu and Zhaohui Liang and Ryan Pontius and Shengpu Tang and Temiloluwa Prioleau},
+      year={2026},
+      eprint={2606.06881},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2606.06881}, 
 }
 ```
 
