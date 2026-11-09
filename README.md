@@ -63,6 +63,12 @@ GlucoseML_benchmark/
 │   ├── predict_glucose_multiwindow_timer_fewshot.py
 │   └── timer.md                   # Implementation guide
 │
+├── TiRex-2/                       # TiRex-2 (NXAI, xLSTM)
+│   ├── predict_glucose_multiwindow_tirex-2_zeroshot.py
+│   ├── tirex2_common.py
+│   ├── requirements.txt
+│   └── tirex-2.md                 # Implementation guide
+│
 ├── timesfm/                       # TimesFM (Google)
 │   ├── predict_glucose_multiwindow_timesfm_zeroshot.py
 │   ├── predict_glucose_multiwindow_timesfm_fullshot.py
@@ -161,12 +167,18 @@ See individual model documentation for specific commands.
 | **TimesFM** | Transformer-Decoder | [timesfm.md](timesfm/timesfm.md) | Google pretrained |
 | **Uni2TS (Moirai2.0)** | Transformer-Decoder | [moirai.md](uni2ts/moirai.md) | Universal time series model |
 
+### Foundation Models (Recurrent, xLSTM)
+
+| Model | Architecture | Documentation | Key Features |
+|-------|--------------|---------------|--------------|
+| **TiRex-2** | xLSTM (mLSTM / sLSTM) | [tirex-2.md](TiRex-2/tirex-2.md) | Constant memory, quantile forecasts, NXAI pretrained |
+
 ## 🔬 Evaluation Protocols
 
 ### Zero-Shot Evaluation
 Evaluate pretrained models without any training on glucose data.
 
-**Supported Models:** Chronos, Timer, TimesFM, Uni2TS
+**Supported Models:** Chronos, Timer, TimesFM, Uni2TS, TiRex-2
 
 **Example:**
 ```bash
@@ -363,6 +375,16 @@ If you use this benchmark in your research, please cite:
 }
 ```
 
+**TiRex:**
+```bibtex
+@article{auer2025tirex,
+  title={TiRex: Zero-Shot Forecasting Across Long and Short Horizons with Enhanced In-Context Learning},
+  author={Auer, Andreas and Podest, Patrick and Klotz, Daniel and B{\"o}ck, Sebastian and Klambauer, G{\"u}nter and Hochreiter, Sepp},
+  journal={arXiv preprint arXiv:2505.23719},
+  year={2025}
+}
+```
+
 **GPFormer**
 ```bibtex
 @article{Zhu2025,
@@ -378,6 +400,16 @@ If you use this benchmark in your research, please cite:
    title = {Multi-Horizon Glucose Prediction Across Populations With Deep Domain Generalization},
    volume = {29},
    year = {2025}
+}
+```
+
+**TiRex-2**
+```bibtex
+@article{podest2026tirex,
+  title={TiRex-2: Generalizing TiRex to Multivariate Data and Streaming},
+  author={Podest, Patrick and Pichler, Marco and B{\"u}rger, Elias and Z{\'o}lyomi, Levente and Voggenberger, Bernhard and Berghammer, Wilhelm and Klotz, Daniel and B{\"o}ck, Sebastian and Klambauer, G{\"u}nter and Hochreiter, Sepp},
+  journal={arXiv preprint arXiv:2607.01204},
+  year={2026}
 }
 ```
 

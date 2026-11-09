@@ -1,0 +1,6 @@
+# Python >= 3.11 (required by tirex-2)
+# tirex-2 also installs torch, numpy, flashrnn, mlstm_kernels, huggingface-hub, safetensors, PyYAML, narwhals
+tirex-2==0.4.0
+datasets>=4.4.0
+pandas>=2.2
+matplotlib>=3.10
